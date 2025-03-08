@@ -6,9 +6,11 @@ Desc: 百度股市通-热搜股票
 https://gushitong.baidu.com/expressnews
 """
 
+import http.client
+import json
 import pandas as pd
-import requests
 from datetime import datetime
+from urllib.parse import urlencode
 
 
 def stock_hot_search_baidu(
@@ -33,7 +35,7 @@ def stock_hot_search_baidu(
         "港股": "hk",
         "美股": "us",
     }
-    url = "https://finance.pae.baidu.com/vapi/v1/hotrank"
+    conn = http.client.HTTPSConnection("finance.pae.baidu.com")
     params = {
         "tn": "wisexmlnew",
         "dsp": "iphone",
@@ -46,8 +48,12 @@ def stock_hot_search_baidu(
         "type": "day" if time == "今日" else "hour",
         "finClientType": "pc",
     }
-    r = requests.get(url, params=params)
-    data_json = r.json()
+    query_string = urlencode(params)
+    url = "/vapi/v1/hotrank" + "?" + query_string
+    conn.request(method="GET", url=url)
+    r = conn.getresponse()
+    data = r.read()
+    data_json = json.loads(data)
     temp_df = pd.DataFrame(
         data_json["Result"]["body"], columns=data_json["Result"]["header"]
     )

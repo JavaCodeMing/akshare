@@ -50,6 +50,8 @@ def stock_zh_kcb_report_em(from_page: int = 1, to_page: int = 100) -> pd.DataFra
     url = "https://np-anotice-stock.eastmoney.com/api/security/ann"
     total_page = _stock_zh_kcb_report_em_page()
     big_df = pd.DataFrame()
+    to_page = int(to_page)
+    from_page = int(from_page)
     if to_page >= total_page:
         to_page = total_page
     for i in tqdm(range(from_page, to_page + 1), leave=False):

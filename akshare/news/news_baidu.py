@@ -6,6 +6,9 @@ Desc: 百度股市通-经济数据
 https://gushitong.baidu.com/calendar
 """
 
+import http.client
+import json
+from urllib.parse import urlencode
 import pandas as pd
 import requests
 
@@ -21,7 +24,7 @@ def news_economic_baidu(date: str = "20241107") -> pd.DataFrame:
     """
     start_date = "-".join([date[:4], date[4:6], date[6:]])
     end_date = "-".join([date[:4], date[4:6], date[6:]])
-    url = "https://finance.pae.baidu.com/api/financecalendar"
+    conn = http.client.HTTPSConnection("finance.pae.baidu.com")
     params = {
         "start_date": start_date,
         "end_date": end_date,
@@ -29,8 +32,12 @@ def news_economic_baidu(date: str = "20241107") -> pd.DataFrame:
         "cate": "economic_data",
         "finClientType": "pc",
     }
-    r = requests.get(url=url, params=params)
-    data_json = r.json()
+    query_string = urlencode(params)
+    url = "/api/financecalendar" + "?" + query_string
+    conn.request(method="GET", url=url)
+    r = conn.getresponse()
+    data = r.read()
+    data_json = json.loads(data)
     big_df = pd.DataFrame()
     for item in data_json["Result"]:
         if not item["list"] == []:
@@ -83,7 +90,7 @@ def news_trade_notify_suspend_baidu(date: str = "20241107") -> pd.DataFrame:
     """
     start_date = "-".join([date[:4], date[4:6], date[6:]])
     end_date = "-".join([date[:4], date[4:6], date[6:]])
-    url = "https://finance.pae.baidu.com/api/financecalendar"
+    conn = http.client.HTTPSConnection("finance.pae.baidu.com")
     params = {
         "start_date": start_date,
         "end_date": end_date,
@@ -91,8 +98,12 @@ def news_trade_notify_suspend_baidu(date: str = "20241107") -> pd.DataFrame:
         "cate": "notify_suspend",
         "finClientType": "pc",
     }
-    r = requests.get(url=url, params=params)
-    data_json = r.json()
+    query_string = urlencode(params)
+    url = "/api/financecalendar" + "?" + query_string
+    conn.request(method="GET", url=url)
+    r = conn.getresponse()
+    data = r.read()
+    data_json = json.loads(data)
     big_df = pd.DataFrame()
     for item in data_json["Result"]:
         if not item["list"] == []:
@@ -140,7 +151,7 @@ def news_trade_notify_dividend_baidu(date: str = "20241107") -> pd.DataFrame:
     """
     start_date = "-".join([date[:4], date[4:6], date[6:]])
     end_date = "-".join([date[:4], date[4:6], date[6:]])
-    url = "https://finance.pae.baidu.com/api/financecalendar"
+    conn = http.client.HTTPSConnection("finance.pae.baidu.com")
     params = {
         "start_date": start_date,
         "end_date": end_date,
@@ -149,8 +160,12 @@ def news_trade_notify_dividend_baidu(date: str = "20241107") -> pd.DataFrame:
         "rn": 500,
         "pn": 0,
     }
-    r = requests.get(url=url, params=params)
-    data_json = r.json()
+    query_string = urlencode(params)
+    url = "/api/financecalendar" + "?" + query_string
+    conn.request(method="GET", url=url)
+    r = conn.getresponse()
+    data = r.read()
+    data_json = json.loads(data)
     big_df = pd.DataFrame()
     for item in data_json["Result"]:
         if not item["list"] == []:
@@ -208,7 +223,7 @@ def news_report_time_baidu(date: str = "20241107") -> pd.DataFrame:
     """
     start_date = "-".join([date[:4], date[4:6], date[6:]])
     end_date = "-".join([date[:4], date[4:6], date[6:]])
-    url = "https://finance.pae.baidu.com/api/financecalendar"
+    conn = http.client.HTTPSConnection("finance.pae.baidu.com")
     params = {
         "start_date": start_date,
         "end_date": end_date,
@@ -216,8 +231,12 @@ def news_report_time_baidu(date: str = "20241107") -> pd.DataFrame:
         "cate": "report_time",
         "finClientType": "pc",
     }
-    r = requests.get(url=url, params=params)
-    data_json = r.json()
+    query_string = urlencode(params)
+    url = "/api/financecalendar" + "?" + query_string
+    conn.request(method="GET", url=url)
+    r = conn.getresponse()
+    data = r.read()
+    data_json = json.loads(data)
     big_df = pd.DataFrame()
     for item in data_json["Result"]:
         if not item["list"] == []:
@@ -246,11 +265,12 @@ def news_report_time_baidu(date: str = "20241107") -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+
     news_economic_baidu_df = news_economic_baidu(date="20250307")
     print(news_economic_baidu_df)
 
     news_trade_notify_suspend_baidu_df = news_trade_notify_suspend_baidu(
-        date="20241107"
+        date="20250307"
     )
     print(news_trade_notify_suspend_baidu_df)
 
@@ -260,4 +280,6 @@ if __name__ == "__main__":
     print(news_trade_notify_dividend_baidu_df)
 
     news_report_time_baidu_df = news_report_time_baidu(date="20241107")
-    print(news_report_time_baidu_df)
+    print(news_report_time_baidu_df)    
+
+
