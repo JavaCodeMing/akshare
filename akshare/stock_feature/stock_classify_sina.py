@@ -5,6 +5,7 @@ Date: 2022/7/13 16:16
 Desc: 新浪财经-股票-行业分类
 http://vip.stock.finance.sina.com.cn/mkt/
 """
+
 import math
 
 import pandas as pd
@@ -30,9 +31,7 @@ def stock_classify_board() -> dict:
         for item in data_json[1][0][1]
     ]  # 沪深股市
     for num, class_name in enumerate(class_name_list):
-        temp_df = pd.DataFrame(
-            [item for item in data_json[1][0][1][num][1:][0]]
-        )
+        temp_df = pd.DataFrame([item for item in data_json[1][0][1][num][1:][0]])
         if temp_df.shape[1] == 5:
             temp_df.columns = ["name", "_", "code", "_", "_"]
             temp_df = temp_df[["name", "code"]]
@@ -57,9 +56,7 @@ def stock_classify_sina(symbol: str = "热门概念") -> pd.DataFrame:
     """
     stock_classify_board_dict = stock_classify_board()
     data_df = pd.DataFrame()
-    for num in tqdm(
-        range(len(stock_classify_board_dict[symbol]["code"])), leave=False
-    ):
+    for num in tqdm(range(len(stock_classify_board_dict[symbol]["code"])), leave=False):
         url = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeStockCount"
         params = {"node": stock_classify_board_dict[symbol]["code"][num]}
         r = requests.get(url, params=params)

@@ -5,6 +5,7 @@ Date: 2023/6/19 17:00
 Desc: 沐甜科技数据中心-中国食糖指数
 https://www.msweet.com.cn/mtkj/sjzx13/index.html
 """
+
 import requests
 import pandas as pd
 
@@ -93,12 +94,25 @@ def index_outer_quote_sugar_msweet() -> pd.DataFrame:
     temp_df = pd.concat(
         [pd.DataFrame(data_json["category"]), pd.DataFrame(data_json["data"])], axis=1
     )
-    temp_df.columns = ["日期", "巴西糖进口成本", "泰国糖进口利润空间", "巴西糖进口利润空间", "泰国糖进口成本", "日照现货价"]
+    temp_df.columns = [
+        "日期",
+        "巴西糖进口成本",
+        "泰国糖进口利润空间",
+        "巴西糖进口利润空间",
+        "泰国糖进口成本",
+        "日照现货价",
+    ]
     temp_df["日期"] = temp_df["日期"].str.replace("/", "-")
     temp_df["日期"] = pd.to_datetime(temp_df["日期"], errors="coerce").dt.date
-    temp_df["巴西糖进口成本"] = pd.to_numeric(temp_df["巴西糖进口成本"], errors="coerce")
-    temp_df["泰国糖进口利润空间"] = pd.to_numeric(temp_df["泰国糖进口利润空间"], errors="coerce")
-    temp_df["巴西糖进口利润空间"] = pd.to_numeric(temp_df["巴西糖进口利润空间"], errors="coerce")
+    temp_df["巴西糖进口成本"] = pd.to_numeric(
+        temp_df["巴西糖进口成本"], errors="coerce"
+    )
+    temp_df["泰国糖进口利润空间"] = pd.to_numeric(
+        temp_df["泰国糖进口利润空间"], errors="coerce"
+    )
+    temp_df["巴西糖进口利润空间"] = pd.to_numeric(
+        temp_df["巴西糖进口利润空间"], errors="coerce"
+    )
     temp_df["泰国糖进口成本"] = pd.to_numeric(temp_df["泰国糖进口成本"])
     temp_df["日照现货价"] = pd.to_numeric(temp_df["日照现货价"], errors="coerce")
     return temp_df

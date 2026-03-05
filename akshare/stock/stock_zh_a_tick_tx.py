@@ -6,6 +6,7 @@ Desc: 腾讯-股票-实时行情-成交明细
 成交明细-每个交易日 16:00 提供当日数据
 港股报价延时 15 分钟
 """
+
 import warnings
 
 import pandas as pd
@@ -36,17 +37,24 @@ def stock_zh_a_tick_tx_js(symbol: str = "sz000001") -> pd.DataFrame:
             r = requests.get(url, params=params)
             text_data = r.text
             temp_df = (
-                pd.DataFrame(eval(text_data[text_data.find("["):])[1].split("|"))
+                pd.DataFrame(eval(text_data[text_data.find("[") :])[1].split("|"))
                 .iloc[:, 0]
                 .str.split("/", expand=True)
             )
             page += 1
             big_df = pd.concat([big_df, temp_df], ignore_index=True)
-        except:
+        except:  # noqa: E722
             break
     if not big_df.empty:
         big_df = big_df.iloc[:, 1:].copy()
-        big_df.columns = ["成交时间", "成交价格", "价格变动", "成交量", "成交金额", "性质"]
+        big_df.columns = [
+            "成交时间",
+            "成交价格",
+            "价格变动",
+            "成交量",
+            "成交金额",
+            "性质",
+        ]
         big_df.reset_index(drop=True, inplace=True)
         property_map = {
             "S": "卖盘",

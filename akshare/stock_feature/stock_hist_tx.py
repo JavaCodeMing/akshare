@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 """
-Date: 2023/7/25 15:30
+Date: 2025/10/15 22:30
 Desc: 腾讯证券-行情首页-沪深京A股
 https://quote.eastmoney.com/
 """
+
 import datetime
 
 import pandas as pd
@@ -16,11 +17,11 @@ from akshare.utils.tqdm import get_tqdm
 
 
 def stock_zh_a_hist_tx(
-        symbol: str = "sz000001",
-        start_date: str = "19000101",
-        end_date: str = "20500101",
-        adjust: str = "",
-        timeout: float = None,
+    symbol: str = "sz000001",
+    start_date: str = "19000101",
+    end_date: str = "20500101",
+    adjust: str = "",
+    timeout: float = None,
 ) -> pd.DataFrame:
     """
     腾讯证券-日频-股票历史数据
@@ -57,7 +58,7 @@ def stock_zh_a_hist_tx(
         }
         r = requests.get(url, params=params, timeout=timeout)
         data_text = r.text
-        data_json = demjson.decode(data_text[data_text.find("={") + 1:])["data"][
+        data_json = demjson.decode(data_text[data_text.find("={") + 1 :])["data"][
             symbol
         ]
         if "day" in data_json.keys():
@@ -76,13 +77,15 @@ def stock_zh_a_hist_tx(
     big_df["low"] = pd.to_numeric(big_df["low"], errors="coerce")
     big_df["amount"] = pd.to_numeric(big_df["amount"], errors="coerce")
     big_df.drop_duplicates(inplace=True, ignore_index=True)
-    big_df.index = pd.to_datetime(big_df["date"])
+    big_df.index = pd.to_datetime(big_df["date"], errors="coerce")
+    big_df.sort_index(inplace=True)
     big_df = big_df[start_date:end_date]
     big_df.reset_index(inplace=True, drop=True)
     return big_df
 
 
 if __name__ == "__main__":
-    stock_zh_a_hist_tx_df = stock_zh_a_hist_tx(symbol="sz000001", start_date="20200101", end_date="20231027",
-                                               adjust="hfq")
+    stock_zh_a_hist_tx_df = stock_zh_a_hist_tx(
+        symbol="sz000001", start_date="20200101", end_date="20231027", adjust="hfq"
+    )
     print(stock_zh_a_hist_tx_df)

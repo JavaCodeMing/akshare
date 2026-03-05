@@ -5,6 +5,7 @@ Date: 2023/4/10 16:05
 Desc: 乐咕乐股-股息率-A 股股息率
 https://legulegu.com/stockdata/guxilv
 """
+
 import pandas as pd
 import requests
 
@@ -32,7 +33,7 @@ def stock_a_gxl_lg(symbol: str = "上证A股") -> pd.DataFrame:
     r = requests.get(
         url,
         params=params,
-        **get_cookie_csrf(url="https://legulegu.com/stockdata/guxilv")
+        **get_cookie_csrf(url="https://legulegu.com/stockdata/guxilv"),
     )
     data_json = r.json()
     temp_df = pd.DataFrame(data_json[symbol_map[symbol]])
@@ -63,7 +64,7 @@ def stock_hk_gxl_lg() -> pd.DataFrame:
     r = requests.get(
         url,
         params=params,
-        **get_cookie_csrf(url="https://legulegu.com/stockdata/market/hk/dv/hsi")
+        **get_cookie_csrf(url="https://legulegu.com/stockdata/market/hk/dv/hsi"),
     )
     data_json = r.json()
     temp_df = pd.DataFrame(data_json)

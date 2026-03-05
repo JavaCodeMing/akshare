@@ -9,8 +9,6 @@ https://quote.eastmoney.com/concept/sh603777.html?from=classic
 import pandas as pd
 import requests
 
-from akshare.stock_feature.stock_hist_em import code_id_map_em
-
 
 def stock_individual_info_em(
     symbol: str = "603777", timeout: float = None
@@ -25,10 +23,9 @@ def stock_individual_info_em(
     :return: 股票信息
     :rtype: pandas.DataFrame
     """
-    code_id_dict = code_id_map_em()
     url = "https://push2.eastmoney.com/api/qt/stock/get"
+    market_code = 1 if symbol.startswith("6") else 0
     params = {
-        "ut": "fa5fd1943c7b386f172d6893dbfba10b",
         "fltt": "2",
         "invt": "2",
         "fields": "f120,f121,f122,f174,f175,f59,f163,f43,f57,f58,f169,f170,f46,f44,f51,f168,f47,"
@@ -37,9 +34,8 @@ def stock_individual_info_em(
         "f105,f84,f85,f183,f184,f185,f186,f187,f188,f189,f190,f191,f192,f107,f111,f86,f177,f78,"
         "f110,f262,f263,f264,f267,f268,f255,f256,f257,f258,f127,f199,f128,f198,f259,f260,f261,"
         "f171,f277,f278,f279,f288,f152,f250,f251,f252,f253,f254,f269,f270,f271,f272,f273,f274,"
-        "f275,f276,f265,f266,f289,f290,f286,f285,f292,f293,f294,f295",
-        "secid": f"{code_id_dict[symbol]}.{symbol}",
-        "_": "1640157544804",
+        "f275,f276,f265,f266,f289,f290,f286,f285,f292,f293,f294,f295,f43",
+        "secid": f"{market_code}.{symbol}",
     }
     r = requests.get(url, params=params, timeout=timeout)
     data_json = r.json()
@@ -59,6 +55,7 @@ def stock_individual_info_em(
         "f116": "总市值",
         "f117": "流通市值",
         "f189": "上市时间",
+        "f43": "最新",
     }
     temp_df["index"] = temp_df["index"].map(code_name_map)
     temp_df = temp_df[pd.notna(temp_df["index"])]

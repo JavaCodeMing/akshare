@@ -119,8 +119,8 @@ def stock_zh_a_disclosure_report_cninfo(
         "预披露": "pre_disclosure",
     }
     stock_id_map = ""
-    if market == "沪深京":
-        stock_id_map = __get_stock_json(symbol)
+    if market == "沪深京" or "基金":
+        stock_id_map = __get_stock_json(market)
     category_dict = __get_category_dict()
     url = "http://www.cninfo.com.cn/new/hisAnnouncement/query"
     stock_item = "" if symbol == "" else f"{symbol},{stock_id_map[symbol]}"
@@ -136,8 +136,8 @@ def stock_zh_a_disclosure_report_cninfo(
         "secid": "",
         "category": category_item,
         "trade": "",
-        "seDate": f'{"-".join([start_date[:4], start_date[4:6], start_date[6:]])}~'
-        f'{"-".join([end_date[:4], end_date[4:6], end_date[6:]])}',
+        "seDate": f"{'-'.join([start_date[:4], start_date[4:6], start_date[6:]])}~"
+        f"{'-'.join([end_date[:4], end_date[4:6], end_date[6:]])}",
         "sortName": "",
         "sortType": "",
         "isHLtitle": "true",
@@ -231,8 +231,8 @@ def stock_zh_a_disclosure_relation_cninfo(
         "secid": "",
         "category": "",
         "trade": "",
-        "seDate": f'{"-".join([start_date[:4], start_date[4:6], start_date[6:]])}~'
-        f'{"-".join([end_date[:4], end_date[4:6], end_date[6:]])}',
+        "seDate": f"{'-'.join([start_date[:4], start_date[4:6], start_date[6:]])}~"
+        f"{'-'.join([end_date[:4], end_date[4:6], end_date[6:]])}",
         "sortName": "",
         "sortType": "",
         "isHLtitle": "true",
@@ -283,12 +283,12 @@ def stock_zh_a_disclosure_relation_cninfo(
 
 if __name__ == "__main__":
     stock_zh_a_disclosure_report_cninfo_df = stock_zh_a_disclosure_report_cninfo(
-        symbol="",
-        market="沪深京",
+        symbol="164701",
+        market="基金",
         keyword="大模型",
         category="",
-        start_date="20231003",
-        end_date="20240430",
+        start_date="20240422",
+        end_date="20250422",
     )
     print(stock_zh_a_disclosure_report_cninfo_df)
 

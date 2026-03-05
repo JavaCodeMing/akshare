@@ -5,6 +5,7 @@ Date: 2024/1/20 22:00
 Desc: 经济政策不确定性指数
 https://www.policyuncertainty.com/index.html
 """
+
 import pandas as pd
 
 
@@ -28,7 +29,7 @@ def article_epu_index(symbol: str = "China") -> pd.DataFrame:
         symbol = "HK"
         epu_df = pd.read_excel(
             io=f"http://www.policyuncertainty.com/media/{symbol}_EPU_Data_Annotated.xlsx",
-            engine="openpyxl"
+            engine="openpyxl",
         )
         return epu_df
     if symbol in ["Germany", "France", "Italy"]:  # 欧洲
@@ -40,13 +41,13 @@ def article_epu_index(symbol: str = "China") -> pd.DataFrame:
     if symbol in ["Ireland", "Chile", "Colombia", "Netherlands", "Singapore", "Sweden"]:
         epu_df = pd.read_excel(
             io=f"http://www.policyuncertainty.com/media/{symbol}_Policy_Uncertainty_Data.xlsx",
-            engine="openpyxl"
+            engine="openpyxl",
         )
         return epu_df
     if symbol == "Greece":
         epu_df = pd.read_excel(
             io=f"http://www.policyuncertainty.com/media/FKT_{symbol}_Policy_Uncertainty_Data.xlsx",
-            engine="openpyxl"
+            engine="openpyxl",
         )
         return epu_df
     url = f"http://www.policyuncertainty.com/media/{symbol}_Policy_Uncertainty_Data.csv"

@@ -6,6 +6,7 @@ Desc: currencybeacon 提供的外汇数据
 该网站需要先注册后获取 API 使用
 https://currencyscoop.com/
 """
+
 import pandas as pd
 import requests
 

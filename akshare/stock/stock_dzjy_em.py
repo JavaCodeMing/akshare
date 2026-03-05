@@ -103,8 +103,8 @@ def stock_dzjy_mrmx(
         "source": "WEB",
         "client": "WEB",
         "filter": f"""(SECURITY_TYPE_WEB={symbol_map[symbol]})(TRADE_DATE>=
-        '{'-'.join([start_date[:4], start_date[4:6], start_date[6:]])}')(TRADE_DATE<=
-        '{'-'.join([end_date[:4], end_date[4:6], end_date[6:]])}')""",
+        '{"-".join([start_date[:4], start_date[4:6], start_date[6:]])}')(TRADE_DATE<=
+        '{"-".join([end_date[:4], end_date[4:6], end_date[6:]])}')""",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -493,7 +493,7 @@ def stock_dzjy_yybph(symbol: str = "近三月") -> pd.DataFrame:
     period_map = {
         "近一月": "30",
         "近三月": "90",
-        "近六月": "120",
+        "近六月": "180",
         "近一年": "360",
     }
     url = "https://datacenter-web.eastmoney.com/api/data/v1/get"

@@ -5,16 +5,14 @@ Date: 2022/10/10 17:26
 Desc: 百度股市通- A 股或指数-股评-投票
 https://gushitong.baidu.com/index/ab-000001
 """
-import http.client
-import json
+
+import requests
 import pandas as pd
 
-from urllib.parse import urlencode
 
-
-
-
-def stock_zh_vote_baidu(symbol: str = "000001", indicator: str = "指数") -> pd.DataFrame:
+def stock_zh_vote_baidu(
+    symbol: str = "000001", indicator: str = "指数"
+) -> pd.DataFrame:
     """
     百度股市通- A 股或指数-股评-投票
     https://gushitong.baidu.com/index/ab-000001
@@ -26,7 +24,7 @@ def stock_zh_vote_baidu(symbol: str = "000001", indicator: str = "指数") -> pd
     :rtype: pandas.DataFrame
     """
     indicator_map = {"股票": "stock", "指数": "index"}
-    conn = http.client.HTTPSConnection("finance.pae.baidu.com")
+    url = "https://finance.pae.baidu.com/vapi/v1/stockvoterecords"
     params = {
         "code": symbol,
         "market": "ab",
@@ -39,12 +37,8 @@ def stock_zh_vote_baidu(symbol: str = "000001", indicator: str = "指数") -> pd
     temp_list = []
     for item_period in ["day", "week", "month", "year"]:
         params.update({"select_type": item_period})
-        query_string = urlencode(params)
-        url = "/vapi/v1/stockvoterecords" + "?" + query_string
-        conn.request(method="GET", url=url)
-        r = conn.getresponse()
-        data = r.read()
-        data_json = json.loads(data)
+        r = requests.get(url, params=params)
+        data_json = r.json()
         temp_list.append(
             [
                 item

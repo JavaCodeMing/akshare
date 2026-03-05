@@ -5,6 +5,7 @@ Date: 2023/12/12 16:30
 Desc: 基金评级
 https://fund.eastmoney.com/data/fundrating.html
 """
+
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -19,8 +20,8 @@ def fund_rating_all() -> pd.DataFrame:
     """
     url = "https://fund.eastmoney.com/data/fundrating.html"
     r = requests.get(url)
-    soup = BeautifulSoup(r.text, "lxml")
-    data_text = soup.find("div", attrs={"id": "fundinfo"}).find("script").string
+    soup = BeautifulSoup(r.text, features="lxml")
+    data_text = soup.find(name="div", attrs={"id": "fundinfo"}).find("script").string
     data_content = [
         item.split("|")
         for item in data_text.split("var")[6]
@@ -47,7 +48,7 @@ def fund_rating_all() -> pd.DataFrame:
         "-",
         "上海证券",
         "-",
-        "-",
+        "晨星评级",
         "-",
         "济安金信",
         "-",
@@ -71,6 +72,7 @@ def fund_rating_all() -> pd.DataFrame:
             "上海证券",
             "招商证券",
             "济安金信",
+            "晨星评级",
             "手续费",
             "类型",
         ]
@@ -79,7 +81,10 @@ def fund_rating_all() -> pd.DataFrame:
     temp_df["上海证券"] = pd.to_numeric(temp_df["上海证券"], errors="coerce")
     temp_df["招商证券"] = pd.to_numeric(temp_df["招商证券"], errors="coerce")
     temp_df["济安金信"] = pd.to_numeric(temp_df["济安金信"], errors="coerce")
-    temp_df["手续费"] = pd.to_numeric(temp_df["手续费"].str.strip("%"), errors="coerce") / 100
+    temp_df["晨星评级"] = pd.to_numeric(temp_df["晨星评级"], errors="coerce")
+    temp_df["手续费"] = (
+        pd.to_numeric(temp_df["手续费"].str.strip("%"), errors="coerce") / 100
+    )
     return temp_df
 
 
@@ -161,10 +166,18 @@ def fund_rating_sh(date: str = "20230630") -> pd.DataFrame:
         ]
     ]
     temp_df["日期"] = pd.to_datetime(temp_df["日期"], errors="coerce").dt.date
-    temp_df["3年期评级-3年评级"] = pd.to_numeric(temp_df["3年期评级-3年评级"], errors="coerce")
-    temp_df["3年期评级-较上期"] = pd.to_numeric(temp_df["3年期评级-较上期"], errors="coerce")
-    temp_df["5年期评级-5年评级"] = pd.to_numeric(temp_df["5年期评级-5年评级"], errors="coerce")
-    temp_df["5年期评级-较上期"] = pd.to_numeric(temp_df["5年期评级-较上期"], errors="coerce")
+    temp_df["3年期评级-3年评级"] = pd.to_numeric(
+        temp_df["3年期评级-3年评级"], errors="coerce"
+    )
+    temp_df["3年期评级-较上期"] = pd.to_numeric(
+        temp_df["3年期评级-较上期"], errors="coerce"
+    )
+    temp_df["5年期评级-5年评级"] = pd.to_numeric(
+        temp_df["5年期评级-5年评级"], errors="coerce"
+    )
+    temp_df["5年期评级-较上期"] = pd.to_numeric(
+        temp_df["5年期评级-较上期"], errors="coerce"
+    )
     temp_df["单位净值"] = pd.to_numeric(temp_df["单位净值"], errors="coerce")
     temp_df["日增长率"] = pd.to_numeric(temp_df["日增长率"], errors="coerce")
     temp_df["近1年涨幅"] = pd.to_numeric(temp_df["近1年涨幅"], errors="coerce")
@@ -246,8 +259,12 @@ def fund_rating_zs(date: str = "20230331") -> pd.DataFrame:
         ]
     ]
     temp_df["日期"] = pd.to_datetime(temp_df["日期"], errors="coerce").dt.date
-    temp_df["3年期评级-3年评级"] = pd.to_numeric(temp_df["3年期评级-3年评级"], errors="coerce")
-    temp_df["3年期评级-较上期"] = pd.to_numeric(temp_df["3年期评级-较上期"], errors="coerce")
+    temp_df["3年期评级-3年评级"] = pd.to_numeric(
+        temp_df["3年期评级-3年评级"], errors="coerce"
+    )
+    temp_df["3年期评级-较上期"] = pd.to_numeric(
+        temp_df["3年期评级-较上期"], errors="coerce"
+    )
     temp_df["单位净值"] = pd.to_numeric(temp_df["单位净值"], errors="coerce")
     temp_df["日增长率"] = pd.to_numeric(temp_df["日增长率"], errors="coerce")
     temp_df["近1年涨幅"] = pd.to_numeric(temp_df["近1年涨幅"], errors="coerce")
@@ -330,8 +347,12 @@ def fund_rating_ja(date: str = "20230331") -> pd.DataFrame:
         ]
     ]
     temp_df["日期"] = pd.to_datetime(temp_df["日期"], errors="coerce").dt.date
-    temp_df["3年期评级-3年评级"] = pd.to_numeric(temp_df["3年期评级-3年评级"], errors="coerce")
-    temp_df["3年期评级-较上期"] = pd.to_numeric(temp_df["3年期评级-较上期"], errors="coerce")
+    temp_df["3年期评级-3年评级"] = pd.to_numeric(
+        temp_df["3年期评级-3年评级"], errors="coerce"
+    )
+    temp_df["3年期评级-较上期"] = pd.to_numeric(
+        temp_df["3年期评级-较上期"], errors="coerce"
+    )
     temp_df["单位净值"] = pd.to_numeric(temp_df["单位净值"], errors="coerce")
     temp_df["日增长率"] = pd.to_numeric(temp_df["日增长率"], errors="coerce")
     temp_df["近1年涨幅"] = pd.to_numeric(temp_df["近1年涨幅"], errors="coerce")

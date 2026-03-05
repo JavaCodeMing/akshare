@@ -14,7 +14,7 @@ def stock_us_famous_spot_em(symbol: str = "科技类") -> pd.DataFrame:
     """
     东方财富网-行情中心-美股市场-知名美股
     https://quote.eastmoney.com/center/gridlist.html#us_wellknown
-    :symbol: choice of {'科技类', '金融类', '医药食品类', '媒体类', '汽车能源类', '制造零售类'}
+    :param symbol: choice of {'科技类', '金融类', '医药食品类', '媒体类', '汽车能源类', '制造零售类'}
     :type: str
     :return: 知名美股实时行情
     :rtype: pandas.DataFrame
@@ -40,7 +40,6 @@ def stock_us_famous_spot_em(symbol: str = "科技类") -> pd.DataFrame:
         "fs": f"b:MK{market_map[symbol]}",
         "fields": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,"
         "f25,f26,f22,f33,f11,f62,f128,f136,f115,f152",
-        "_": "1631271634231",
     }
     r = requests.get(url, params=params)
     data_json = r.json()

@@ -5,6 +5,7 @@ Date: 2024/1/16 15:30
 Desc: 同花顺-港股-分红派息
 https://stockpage.10jqka.com.cn/HK0700/bonus/
 """
+
 from io import StringIO
 
 import pandas as pd
@@ -57,7 +58,7 @@ def stock_hk_fhpx_detail_ths(symbol: str = "0700") -> pd.DataFrame:
     temp_df["过户日期起止日-截止"] = pd.to_datetime(
         temp_df["过户日期起止日-截止"], format="%Y-%m-%d", errors="coerce"
     ).dt.date
-    temp_df.sort_values(['公告日期'], inplace=True, ignore_index=True)
+    temp_df.sort_values(["公告日期"], inplace=True, ignore_index=True)
     return temp_df
 
 

@@ -1,19 +1,16 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 """
-Date: 2024/4/4 19:00
+Date: 2025/11/4 18:00
 Desc: 东方财富网-概念板-行情中心-日K-筹码分布
 https://quote.eastmoney.com/concept/sz000001.html
 """
 
-import json
 from datetime import datetime
 
 import pandas as pd
-import requests
 import py_mini_racer
-
-from akshare.stock_feature.stock_hist_em import code_id_map_em
+import requests
 
 
 def stock_cyq_em(symbol: str = "000001", adjust: str = "") -> pd.DataFrame:
@@ -222,22 +219,19 @@ def stock_cyq_em(symbol: str = "000001", adjust: str = "") -> pd.DataFrame:
     js_code = py_mini_racer.MiniRacer()
     js_code.eval(html_str)
     adjust_dict = {"qfq": "1", "hfq": "2", "": "0"}
-    code_id_dict = code_id_map_em()
+    market_code = 1 if symbol.startswith("6") else 0
     url = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
     params = {
-        "secid": f"{code_id_dict[symbol]}.{symbol}",
-        "ut": "fa5fd1943c7b386f172d6893dbfba10b",
+        "secid": f"{market_code}.{symbol}",
         "fields1": "f1,f2,f3,f4,f5,f6",
         "fields2": "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
         "klt": "101",
         "fqt": adjust_dict[adjust],
         "end": datetime.now().date().strftime("%Y%m%d"),
         "lmt": "210",
-        "cb": "quote_jp1",
     }
     r = requests.get(url, params=params)
-    data_json = r.text.strip("quote_jp1(").strip(");")
-    data_json = json.loads(data_json)
+    data_json = r.json()
     temp_df = pd.DataFrame([item.split(",") for item in data_json["data"]["klines"]])
     temp_df.columns = [
         "date",

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 """
-Date: 2025/2/24 18:50
+Date: 2025/7/4 15:00
 Desc: 新浪财经-债券-沪深可转债-实时行情数据和历史行情数据
 https://vip.stock.finance.sina.com.cn/mkt/#hskzz_z
 """
@@ -10,8 +10,8 @@ import datetime
 import re
 
 import pandas as pd
-import requests
 import py_mini_racer
+import requests
 
 from akshare.bond.cons import (
     zh_sina_bond_hs_cov_count_url,
@@ -21,6 +21,7 @@ from akshare.bond.cons import (
 )
 from akshare.stock.cons import hk_js_decode
 from akshare.utils import demjson
+from akshare.utils.func import fetch_paginated_data
 from akshare.utils.tqdm import get_tqdm
 
 
@@ -57,7 +58,7 @@ def bond_zh_hs_cov_spot() -> pd.DataFrame:
         zh_sina_bond_hs_payload_copy.update({"page": page})
         res = requests.get(zh_sina_bond_hs_cov_url, params=zh_sina_bond_hs_payload_copy)
         data_json = demjson.decode(res.text)
-        big_df = pd.concat([big_df, pd.DataFrame(data_json)], ignore_index=True)
+        big_df = pd.concat(objs=[big_df, pd.DataFrame(data_json)], ignore_index=True)
     return big_df
 
 
@@ -95,39 +96,33 @@ def _code_id_map() -> dict:
     url = "https://80.push2.eastmoney.com/api/qt/clist/get"
     params = {
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
-        "fid": "f3",
+        "fid": "f12",
         "fs": "m:1 t:2,m:1 t:23",
-        "fields": "f12",
-        "_": "1623833739532",
+        "fields": "f3,f12",
     }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
+    temp_df = fetch_paginated_data(url, params)
     temp_df["market_id"] = 1
-    temp_df.columns = ["sh_code", "sh_id"]
+    temp_df.rename(columns={"f12": "sh_code", "market_id": "sh_id"}, inplace=True)
     code_id_dict = dict(zip(temp_df["sh_code"], temp_df["sh_id"]))
     params = {
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
         "fid": "f3",
         "fs": "m:0 t:6,m:0 t:80",
-        "fields": "f12",
-        "_": "1623833739532",
+        "fields": "f3,f12",
     }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    temp_df_sz = pd.DataFrame(data_json["data"]["diff"]).T
+    temp_df_sz = fetch_paginated_data(url, params)
     temp_df_sz["sz_id"] = 0
     code_id_dict.update(dict(zip(temp_df_sz["f12"], temp_df_sz["sz_id"])))
     return code_id_dict
@@ -280,12 +275,10 @@ def bond_zh_hs_cov_pre_min(symbol: str = "sh113570") -> pd.DataFrame:
     params = {
         "fields1": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13",
         "fields2": "f51,f52,f53,f54,f55,f56,f57,f58",
-        "ut": "fa5fd1943c7b386f172d6893dbfba10b",
         "ndays": "1",
         "iscr": "1",
         "iscca": "0",
         "secid": f"{market_type[symbol[:2]]}.{symbol[2:]}",
-        "_": "1623766962675",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -420,6 +413,7 @@ def bond_zh_cov() -> pd.DataFrame:
         "_",
         "_",
         "_",
+        "_",
     ]
     big_df = big_df[
         [
@@ -478,9 +472,9 @@ def bond_cov_comparison() -> pd.DataFrame:
     url = "https://16.push2.eastmoney.com/api/qt/clist/get"
     params = {
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
@@ -488,14 +482,8 @@ def bond_cov_comparison() -> pd.DataFrame:
         "fs": "b:MK0354",
         "fields": "f1,f152,f2,f3,f12,f13,f14,f227,f228,f229,f230,f231,f232,f233,f234,"
         "f235,f236,f237,f238,f239,f240,f241,f242,f26,f243",
-        "_": "1590386857527",
     }
-    r = requests.get(url, params=params)
-    text_data = r.text
-    json_data = demjson.decode(text_data)
-    temp_df = pd.DataFrame(json_data["data"]["diff"]).T
-    temp_df.reset_index(inplace=True)
-    temp_df["index"] = range(1, len(temp_df) + 1)
+    temp_df = fetch_paginated_data(url, params)
     temp_df.columns = [
         "序号",
         "_",
@@ -582,7 +570,6 @@ def bond_zh_cov_info(
         "source": "WEB",
         "client": "WEB",
         "filter": f'(SECURITY_CODE="{symbol}")',
-        "_": "1654952140613",
     }
     if indicator == "基本信息":
         params.update(
@@ -641,6 +628,8 @@ def bond_zh_cov_value_analysis(symbol: str = "113527") -> pd.DataFrame:
     """
     https://data.eastmoney.com/kzz/detail/113527.html
     东方财富网-数据中心-新股数据-可转债数据-价值分析-溢价率分析
+    :param symbol: 可转债代码
+    :type symbol: str
     :return: 可转债价值分析
     :rtype: pandas.DataFrame
     """
@@ -655,7 +644,6 @@ def bond_zh_cov_value_analysis(symbol: str = "113527") -> pd.DataFrame:
         "filter": f'(zcode="{symbol}")',
         "p": "1",
         "ps": "8000",
-        "_": "1648629088839",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -669,6 +657,7 @@ def bond_zh_cov_value_analysis(symbol: str = "113527") -> pd.DataFrame:
         "纯债溢价率",
         "转股溢价率",
         "收盘价",
+        "-",
         "-",
         "-",
         "-",

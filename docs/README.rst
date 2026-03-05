@@ -57,4 +57,3 @@ There is a way to recreate the doc automatically when you make changes, you
 need to install watchdog (``pip install watchdog``) and then use::
 
     make watch
-

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 """
-Date: 2025/2/28 16:30
+Date: 2025/3/12 17:00
 Desc: 东方财富-沪深板块-概念板块
 https://quote.eastmoney.com/center/boardlist.html#concept_board
 """
@@ -11,6 +11,8 @@ from functools import lru_cache
 
 import pandas as pd
 import requests
+
+from akshare.utils.func import fetch_paginated_data
 
 
 @lru_cache()
@@ -24,22 +26,17 @@ def __stock_board_concept_name_em() -> pd.DataFrame:
     url = "https://79.push2.eastmoney.com/api/qt/clist/get"
     params = {
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
-        "fid": "f3",
+        "fid": "f12",
         "fs": "m:90 t:3 f:!50",
         "fields": "f2,f3,f4,f8,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22,f33,f11,f62,f128,f124,f107,f104,f105,f136",
-        "_": "1626075887768",
     }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
-    temp_df.reset_index(inplace=True)
-    temp_df["index"] = range(1, len(temp_df) + 1)
+    temp_df = fetch_paginated_data(url, params)
     temp_df.columns = [
         "排名",
         "最新价",
@@ -108,22 +105,17 @@ def stock_board_concept_name_em() -> pd.DataFrame:
     url = "https://79.push2.eastmoney.com/api/qt/clist/get"
     params = {
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
-        "fid": "f3",
+        "fid": "f12",
         "fs": "m:90 t:3 f:!50",
         "fields": "f2,f3,f4,f8,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22,f33,f11,f62,f128,f124,f107,f104,f105,f136",
-        "_": "1626075887768",
     }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
-    temp_df.reset_index(inplace=True)
-    temp_df["index"] = range(1, len(temp_df) + 1)
+    temp_df = fetch_paginated_data(url, params)
     temp_df.columns = [
         "排名",
         "最新价",
@@ -186,6 +178,8 @@ def stock_board_concept_spot_em(symbol: str = "可燃冰") -> pd.DataFrame:
     """
     东方财富网-行情中心-沪深京板块-概念板块-实时行情
     https://quote.eastmoney.com/bk/90.BK0818.html
+    :param symbol: 概念板块代码
+    :type symbol: str
     :return: 概念板块-实时行情
     :rtype: pandas.DataFrame
     """
@@ -214,7 +208,6 @@ def stock_board_concept_spot_em(symbol: str = "可燃冰") -> pd.DataFrame:
         invt="2",
         fltt="1",
         secid=f"90.{em_code}",
-        ut="fa5fd1943c7b386f172d6893dbfba10b",
     )
     r = requests.get(url, params=params)
     data_dict = r.json()
@@ -267,7 +260,6 @@ def stock_board_concept_hist_em(
     url = "https://91.push2his.eastmoney.com/api/qt/stock/kline/get"
     params = {
         "secid": f"90.{stock_board_code}",
-        "ut": "fa5fd1943c7b386f172d6893dbfba10b",
         "fields1": "f1,f2,f3,f4,f5,f6",
         "fields2": "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
         "klt": period_map[period],
@@ -276,7 +268,6 @@ def stock_board_concept_hist_em(
         "end": end_date,
         "smplmt": "10000",
         "lmt": "1000000",
-        "_": "1626079488673",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -344,11 +335,9 @@ def stock_board_concept_hist_min_em(
         params = {
             "fields1": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13",
             "fields2": "f51,f52,f53,f54,f55,f56,f57,f58",
-            "ut": "fa5fd1943c7b386f172d6893dbfba10b",
             "iscr": "0",
             "ndays": "1",
             "secid": f"90.{stock_board_code}",
-            "_": "1687852931312",
         }
         r = requests.get(url, params=params)
         data_json = r.json()
@@ -377,14 +366,12 @@ def stock_board_concept_hist_min_em(
         url = "https://91.push2his.eastmoney.com/api/qt/stock/kline/get"
         params = {
             "secid": f"90.{stock_board_code}",
-            "ut": "fa5fd1943c7b386f172d6893dbfba10b",
             "fields1": "f1,f2,f3,f4,f5,f6",
             "fields2": "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
             "klt": period,
             "fqt": "1",
             "end": "20500101",
             "lmt": "1000000",
-            "_": "1647760607065",
         }
         r = requests.get(url, params=params)
         data_json = r.json()
@@ -451,23 +438,18 @@ def stock_board_concept_cons_em(symbol: str = "融资融券") -> pd.DataFrame:
     url = "https://29.push2.eastmoney.com/api/qt/clist/get"
     params = {
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
-        "fid": "f3",
+        "fid": "f12",
         "fs": f"b:{stock_board_code} f:!50",
         "fields": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,"
         "f24,f25,f22,f11,f62,f128,f136,f115,f152,f45",
-        "_": "1626081702127",
     }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
-    temp_df.reset_index(inplace=True)
-    temp_df["index"] = range(1, len(temp_df) + 1)
+    temp_df = fetch_paginated_data(url, params)
     temp_df.columns = [
         "序号",
         "_",

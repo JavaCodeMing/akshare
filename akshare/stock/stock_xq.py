@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 # -*- coding:utf-8 -*-
 """
-Date: 2024/12/18 17:50
+Date: 2026/1/13 15:00
 Desc: 雪球-行情中心-个股
 https://xueqiu.com/S/SH513520
 """
@@ -28,23 +28,25 @@ def _convert_timestamp(timestamp_ms: int) -> str:
 
 def stock_individual_spot_xq(
     symbol: str = "SH600000",
-    timeout: float = None,
     token: str = None,
+    timeout: float = None,
 ) -> pd.DataFrame:
     """
     雪球-行情中心-个股
     https://xueqiu.com/S/SH600000
     :param symbol: 证券代码，可以是 A 股代码，A 股场内基金代码，A 股指数，美股代码, 美股指数
     :type symbol: str
-    :param timeout: choice of None or a positive float number
-    :type timeout: float
     :param token: set xueqiu token
     :type token: str
+    :param timeout: choice of None or a positive float number
+    :type timeout: float
     :return: 证券最新行情
     :rtype: pandas.DataFrame
     """
+    from akshare.stock.cons import xq_a_token
+
     session = requests.Session()
-    xq_a_token = token or "afb2d000c59b0e6fa5539ff13798ca8e64330985"
+    xq_a_token = token or xq_a_token
     headers = {
         "cookie": f"xq_a_token={xq_a_token};",
         "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 "
@@ -105,21 +107,24 @@ def stock_individual_spot_xq(
         *map(
             lambda x: column_name_map[x] if x in column_name_map.keys() else x,
             temp_df.columns,
-        )  # 由于传入的symbol可能是个股，可能是指数，也可能是基金，所以这里取列的最大公约数，没有数据的列内容为None
+        )  # 由于传入的 symbol 可能是个股，可能是指数，也可能是基金，所以这里取列的最大公约数，没有数据的列内容为 None
     ]
     temp_df = temp_df[
         list(
             filter(
                 lambda x: re.search(pattern="[\u4e00-\u9fa5]", string=x),
                 temp_df.columns,
-            )  # 过滤temp_df，留下包含汉字的列
+            )  # 过滤 temp_df，留下包含汉字的列
         )
     ]
     temp_df = temp_df.T.reset_index()
     temp_df.columns = ["item", "value"]
     temp_df.loc[temp_df["item"] == "时间", "value"] = temp_df.loc[
         temp_df["item"] == "时间", "value"
-    ].apply(lambda x: _convert_timestamp(int(x)))
+    ].apply(lambda x: _convert_timestamp(int(x)) if x and not pd.isna(x) else None)
+    temp_df.loc[temp_df["item"] == "发行日期", "value"] = temp_df.loc[
+        temp_df["item"] == "发行日期", "value"
+    ].apply(lambda x: _convert_timestamp(int(x)) if x and not pd.isna(x) else None)
     return temp_df
 
 
@@ -127,7 +132,7 @@ if __name__ == "__main__":
     stock_individual_spot_xq_df = stock_individual_spot_xq(symbol="BJ430139")
     print(stock_individual_spot_xq_df)
 
-    stock_individual_spot_xq_df = stock_individual_spot_xq(symbol="SH000001")
+    stock_individual_spot_xq_df = stock_individual_spot_xq(symbol="SH600000")
     print(stock_individual_spot_xq_df)
 
     stock_individual_spot_xq_df = stock_individual_spot_xq(symbol="SPY")

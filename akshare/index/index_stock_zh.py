@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 """
-Date: 2025/2/17 20:30
+Date: 2025/3/10 18:30
 Desc: 股票指数数据-新浪-东财-腾讯
 所有指数-实时行情数据和历史行情数据
 https://finance.sina.com.cn/realstock/company/sz399552/nc.shtml
@@ -11,8 +11,8 @@ import datetime
 import re
 
 import pandas as pd
-import requests
 import py_mini_racer
+import requests
 
 from akshare.index.cons import (
     zh_sina_index_stock_payload,
@@ -22,6 +22,7 @@ from akshare.index.cons import (
 )
 from akshare.stock.cons import hk_js_decode
 from akshare.utils import demjson
+from akshare.utils.func import fetch_paginated_data
 from akshare.utils.tqdm import get_tqdm
 
 
@@ -135,9 +136,9 @@ def __stock_zh_main_spot_em() -> pd.DataFrame:
     url = "https://33.push2.eastmoney.com/api/qt/clist/get"
     params = {
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
@@ -147,11 +148,10 @@ def __stock_zh_main_spot_em() -> pd.DataFrame:
         "fs": "b:MK0010",
         "fields": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,"
         "f23,f24,f25,f26,f22,f11,f62,f128,f136,f115,f152",
-        "_": "1704327268532",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
+    temp_df = pd.DataFrame(data_json["data"]["diff"])
     temp_df.reset_index(inplace=True)
     temp_df["index"] = temp_df["index"].astype(int) + 1
     temp_df.rename(
@@ -205,7 +205,7 @@ def __stock_zh_main_spot_em() -> pd.DataFrame:
     return temp_df
 
 
-def stock_zh_index_spot_em(symbol: str = "沪深重要指数") -> pd.DataFrame:
+def stock_zh_index_spot_em(symbol: str = "上证系列指数") -> pd.DataFrame:
     """
     东方财富网-行情中心-沪深京指数
     https://quote.eastmoney.com/center/gridlist.html#index_sz
@@ -219,31 +219,26 @@ def stock_zh_index_spot_em(symbol: str = "沪深重要指数") -> pd.DataFrame:
 
     url = "https://48.push2.eastmoney.com/api/qt/clist/get"
     symbol_map = {
-        "上证系列指数": "m:1 s:2",
+        "上证系列指数": "m:1+t:1",
         "深证系列指数": "m:0 t:5",
-        "指数成份": "m:1 s:3,m:0 t:5",
+        "指数成份": "m:1+s:3,m:0+t:5",
         "中证系列指数": "m:2",
     }
     params = {
         "pn": "1",
-        "pz": "20000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
         "wbp2u": "|0|0|0|web",
-        "fid": "f3",
+        "fid": "f12",
         "fs": symbol_map[symbol],
         "fields": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,"
         "f26,f22,f33,f11,f62,f128,f136,f115,f152",
-        "_": "1704327268532",
     }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
-    temp_df.reset_index(inplace=True)
-    temp_df["index"] = temp_df["index"].astype(int) + 1
+    temp_df = fetch_paginated_data(url, params)
     temp_df.rename(
         columns={
             "index": "序号",
@@ -321,14 +316,14 @@ def stock_zh_index_daily(symbol: str = "sh000922") -> pd.DataFrame:
     return temp_df
 
 
-def get_tx_start_year(symbol: str = "sh000919") -> pd.DataFrame:
+def get_tx_start_year(symbol: str = "sh000919") -> str:
     """
     腾讯证券-获取所有股票数据的第一天, 注意这个数据是腾讯证券的历史数据第一天
     https://gu.qq.com/sh000919/zs
     :param symbol: 带市场标识的股票代码
     :type symbol: str
     :return: 开始日期
-    :rtype: pandas.DataFrame
+    :rtype: str
     """
     url = "https://web.ifzq.gtimg.cn/other/klineweb/klineWeb/weekTrends"
     params = {
@@ -422,10 +417,12 @@ def stock_zh_index_daily_em(
     :return: 指数数据
     :rtype: pandas.DataFrame
     """
-    market_map = {"sz": "0", "sh": "1", "csi": "2"}
+    market_map = {"sz": "0", "sh": "1", "csi": "2", "bj": "0"}
     url = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
     if symbol.find("sz") != -1:
         secid = "{}.{}".format(market_map["sz"], symbol.replace("sz", ""))
+    elif symbol.find("bj") != -1:
+        secid = "{}.{}".format(market_map["bj"], symbol.replace("bj", ""))
     elif symbol.find("sh") != -1:
         secid = "{}.{}".format(market_map["sh"], symbol.replace("sh", ""))
     elif symbol.find("csi") != -1:
@@ -433,22 +430,17 @@ def stock_zh_index_daily_em(
     else:
         return pd.DataFrame()
     params = {
-        "cb": "jQuery1124033485574041163946_1596700547000",
         "secid": secid,
-        "ut": "fa5fd1943c7b386f172d6893dbfba10b",
         "fields1": "f1,f2,f3,f4,f5",
         "fields2": "f51,f52,f53,f54,f55,f56,f57,f58",
         "klt": "101",  # 日频率
         "fqt": "0",
         "beg": start_date,
         "end": end_date,
-        "_": "1596700547039",
     }
     r = requests.get(url, params=params)
-    data_text = r.text
-    data_json = demjson.decode(data_text[data_text.find("{") : -2])
+    data_json = r.json()
     temp_df = pd.DataFrame([item.split(",") for item in data_json["data"]["klines"]])
-    # check temp_df data availability before further transformations which may raise errors
     if temp_df.empty:
         return pd.DataFrame()
     temp_df.columns = ["date", "open", "close", "high", "low", "volume", "amount", "_"]
@@ -469,18 +461,23 @@ if __name__ == "__main__":
     stock_zh_index_spot_sina_df = stock_zh_index_spot_sina()
     print(stock_zh_index_spot_sina_df)
 
-    for item in [
-        "沪深重要指数",
-        "上证系列指数",
-        "深证系列指数",
-        "指数成份",
-        "中证系列指数",
-    ]:
-        stock_zh_index_spot_em_df = stock_zh_index_spot_em(symbol=item)
-        print(stock_zh_index_spot_em_df)
+    stock_zh_index_spot_em_df = stock_zh_index_spot_em(symbol="沪深重要指数")
+    print(stock_zh_index_spot_em_df)
+
+    stock_zh_index_spot_em_df = stock_zh_index_spot_em(symbol="上证系列指数")
+    print(stock_zh_index_spot_em_df)
+
+    stock_zh_index_spot_em_df = stock_zh_index_spot_em(symbol="深证系列指数")
+    print(stock_zh_index_spot_em_df)
+
+    stock_zh_index_spot_em_df = stock_zh_index_spot_em(symbol="指数成份")
+    print(stock_zh_index_spot_em_df)
+
+    stock_zh_index_spot_em_df = stock_zh_index_spot_em(symbol="中证系列指数")
+    print(stock_zh_index_spot_em_df)
 
     stock_zh_index_daily_tx_df = stock_zh_index_daily_tx(symbol="sh000919")
     print(stock_zh_index_daily_tx_df)
 
-    stock_zh_index_daily_em_df = stock_zh_index_daily_em(symbol="sz399812")
+    stock_zh_index_daily_em_df = stock_zh_index_daily_em(symbol="bj899050")
     print(stock_zh_index_daily_em_df)

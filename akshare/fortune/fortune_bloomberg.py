@@ -5,6 +5,7 @@ Date: 2022/4/10 18:24
 Desc: 彭博亿万富豪指数
 https://www.bloomberg.com/billionaires/
 """
+
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -34,8 +35,8 @@ def index_bloomberg_billionaires_hist(year: str = "2021") -> pd.DataFrame:
     for dic_key in dic_keys:
         dic[dic_key] = []
 
-    for l in trs:
-        item = l.findAll("td")
+    for ll in trs:
+        item = ll.findAll("td")
         for i in range(len(item)):
             v = item[i].text
             if i == 0 and not v.isdigit():
@@ -110,5 +111,7 @@ if __name__ == "__main__":
     index_bloomberg_billionaires_df = index_bloomberg_billionaires()
     print(index_bloomberg_billionaires_df)
 
-    index_bloomberg_billionaires_hist_df = index_bloomberg_billionaires_hist(year="2021")
+    index_bloomberg_billionaires_hist_df = index_bloomberg_billionaires_hist(
+        year="2021"
+    )
     print(index_bloomberg_billionaires_hist_df)

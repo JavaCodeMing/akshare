@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 """
-Date: 2025/3/4 23:00
+Date: 2025/3/9 23:00
 Desc: 东方财富网-行情中心-沪深港通
 https://quote.eastmoney.com/center/gridlist.html#ah_comparison
 """
 
 import pandas as pd
-import requests
+
+from akshare.utils.func import fetch_paginated_data
 
 
 def stock_zh_ah_spot_em() -> pd.DataFrame:
@@ -19,23 +20,19 @@ def stock_zh_ah_spot_em() -> pd.DataFrame:
     """
     url = "https://push2.eastmoney.com/api/qt/clist/get"
     params = {
-        "np": "2",
+        "np": "1",
         "fltt": "1",
         "invt": "2",
         "fs": "b:DLMK0101",
         "fields": "f193,f191,f192,f12,f13,f14,f1,f2,f4,f3,f152,f186,f190,f187,f189,f188",
         "fid": "f3",
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
         "dect": "1",
-        "ut": "fa5fd1943c7b386f172d6893dbfba10b",
         "wbp2u": "|0|0|0|web",
-        "_": "1741100627371",
     }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
+    temp_df = fetch_paginated_data(url, params)
     temp_df.reset_index(inplace=True)
     temp_df["index"] = temp_df["index"].astype(int) + 1
     temp_df.rename(
@@ -85,28 +82,21 @@ def stock_hsgt_sh_hk_spot_em() -> pd.DataFrame:
     """
     url = "https://push2.eastmoney.com/api/qt/clist/get"
     params = {
-        "np": "2",
+        "np": "1",
         "fltt": "1",
         "invt": "2",
         "fs": "b:DLMK0144",
         "fields": "f12,f13,f14,f19,f1,f2,f4,f3,f152,f17,f18,f15,f16,f5,f6",
-        "fid": "f3",
+        "fid": "f12",
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
         "dect": "1",
-        "ut": "fa5fd1943c7b386f172d6893dbfba10b",
         "wbp2u": "|0|0|0|web",
-        "_": "1741100627371",
     }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
-    temp_df.reset_index(inplace=True)
-    temp_df["index"] = temp_df["index"].astype(int) + 1
+    temp_df = fetch_paginated_data(url, params)
     temp_df.rename(
         columns={
-            "index": "序号",
             "f12": "代码",
             "f14": "名称",
             "f2": "最新价",
@@ -124,7 +114,6 @@ def stock_hsgt_sh_hk_spot_em() -> pd.DataFrame:
 
     temp_df = temp_df[
         [
-            "序号",
             "代码",
             "名称",
             "最新价",
@@ -147,6 +136,10 @@ def stock_hsgt_sh_hk_spot_em() -> pd.DataFrame:
     temp_df["昨收"] = pd.to_numeric(temp_df["昨收"], errors="coerce") / 1000
     temp_df["成交量"] = pd.to_numeric(temp_df["成交量"], errors="coerce") / 100000000
     temp_df["成交额"] = pd.to_numeric(temp_df["成交额"], errors="coerce") / 100000000
+    temp_df.sort_values(["代码"], ignore_index=True, inplace=True)
+    temp_df.reset_index(inplace=True)
+    temp_df["index"] = temp_df["index"].astype(int) + 1
+    temp_df.rename(columns={"index": "序号"}, inplace=True)
     return temp_df
 
 

@@ -37,9 +37,7 @@ def index_global_spot_em() -> pd.DataFrame:
         "pz": "200",
         "po": "1",
         "dect": "1",
-        "ut": "fa5fd1943c7b386f172d6893dbfba10b",
         "wbp2u": "|0|0|0|web",
-        "_": "1741340608118",
     }
     r = requests.get(url=url, params=params)
     data_json = r.json()
@@ -51,10 +49,10 @@ def index_global_spot_em() -> pd.DataFrame:
             "index": "序号",
             "f12": "代码",
             "f14": "名称",
-            "f17": "最新价",
+            "f17": "开盘价",
             "f4": "涨跌额",
             "f3": "涨跌幅",
-            "f2": "开盘价",
+            "f2": "最新价",
             "f15": "最高价",
             "f16": "最低价",
             "f18": "昨收价",

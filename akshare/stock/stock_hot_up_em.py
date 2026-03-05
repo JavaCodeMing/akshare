@@ -5,6 +5,7 @@ Date: 2023/6/15 15:15
 Desc: 东方财富个股人气榜
 https://guba.eastmoney.com/rank/
 """
+
 import pandas as pd
 import requests
 
@@ -62,7 +63,9 @@ def stock_hot_up_em() -> pd.DataFrame:
             "涨跌幅",
         ]
     ]
-    temp_df["排名较昨日变动"] = pd.to_numeric(temp_df["排名较昨日变动"], errors="coerce")
+    temp_df["排名较昨日变动"] = pd.to_numeric(
+        temp_df["排名较昨日变动"], errors="coerce"
+    )
     temp_df["当前排名"] = pd.to_numeric(temp_df["当前排名"], errors="coerce")
     temp_df["最新价"] = pd.to_numeric(temp_df["最新价"], errors="coerce")
     temp_df["涨跌幅"] = pd.to_numeric(temp_df["涨跌幅"], errors="coerce")

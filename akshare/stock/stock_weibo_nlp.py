@@ -9,6 +9,7 @@ https://datacenter.jin10.com/market
 红色颜色越深，表明该股票讨论热度越高，其当前的涨幅更大。
 绿色颜色越深，表明该股票讨论的热度越低，其当前的跌幅更大。
 """
+
 import time
 from typing import Dict
 
@@ -55,34 +56,31 @@ def stock_js_weibo_report(time_period: str = "CNHOUR12") -> pd.DataFrame:
     :rtype: pandas.DataFrame
     """
     url = "https://datacenter-api.jin10.com/weibo/list"
-    payload = {
-        "timescale": time_period,
-        "_": int(time.time() * 1000)
-    }
+    payload = {"timescale": time_period, "_": int(time.time() * 1000)}
     headers = {
-        'authority': 'datacenter-api.jin10.com',
-        'pragma': 'no-cache',
-        'cache-control': 'no-cache',
-        'accept': '*/*',
-        'x-app-id': 'rU6QIu7JHe2gOUeR',
-        'sec-fetch-dest': 'empty',
-        'x-csrf-token': '',
-        'x-version': '1.0.0',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.116 Safari/537.36',
-        'origin': 'https://datacenter.jin10.com',
-        'sec-fetch-site': 'same-site',
-        'sec-fetch-mode': 'cors',
-        'referer': 'https://datacenter.jin10.com/market',
-        'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8'
+        "authority": "datacenter-api.jin10.com",
+        "pragma": "no-cache",
+        "cache-control": "no-cache",
+        "accept": "*/*",
+        "x-app-id": "rU6QIu7JHe2gOUeR",
+        "sec-fetch-dest": "empty",
+        "x-csrf-token": "",
+        "x-version": "1.0.0",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.116 Safari/537.36",
+        "origin": "https://datacenter.jin10.com",
+        "sec-fetch-site": "same-site",
+        "sec-fetch-mode": "cors",
+        "referer": "https://datacenter.jin10.com/market",
+        "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
     }
 
     r = requests.get(url, params=payload, headers=headers)
     temp_df = pd.DataFrame(r.json()["data"])
-    temp_df['rate'] = pd.to_numeric(temp_df['rate'])
+    temp_df["rate"] = pd.to_numeric(temp_df["rate"])
     return temp_df
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     stock_js_weibo_nlp_time_map = stock_js_weibo_nlp_time()
     print(stock_js_weibo_nlp_time_map)
 

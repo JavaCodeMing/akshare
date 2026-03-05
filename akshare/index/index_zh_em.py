@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 """
-Date: 2025/2/24 18:20
+Date: 2025/3/11 17:00
 Desc: 东方财富网-指数行情数据
 """
 
@@ -9,6 +9,8 @@ from functools import lru_cache
 
 import pandas as pd
 import requests
+
+from akshare.utils.func import fetch_paginated_data
 
 
 @lru_cache()
@@ -22,69 +24,18 @@ def index_code_id_map_em() -> dict:
     url = "https://80.push2.eastmoney.com/api/qt/clist/get"
     params = {
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
         "fid": "f3",
-        "fs": "m:1 t:2,m:1 t:23",
-        "fields": "f12",
-        "_": "1623833739532",
+        "fs": "b:MK0010,m:1+t:1,m:0 t:5,m:1+s:3,m:0+t:5,m:2",
+        "fields": "f3,f12,f13",
     }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    if not data_json["data"]["diff"]:
-        return dict()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
-    temp_df["market_id"] = 1
-    temp_df.columns = ["sh_code", "sh_id"]
-    code_id_dict = dict(zip(temp_df["sh_code"], temp_df["sh_id"]))
-    params = {
-        "pn": "1",
-        "pz": "10000",
-        "po": "1",
-        "np": "2",
-        "ut": "bd1d9ddb04089700cf9c27f6f7426281",
-        "fltt": "2",
-        "invt": "2",
-        "fid": "f3",
-        "fs": "m:0 t:6,m:0 t:80",
-        "fields": "f12",
-        "_": "1623833739532",
-    }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    if not data_json["data"]["diff"]:
-        return dict()
-    temp_df_sz = pd.DataFrame(data_json["data"]["diff"]).T
-    temp_df_sz["sz_id"] = 0
-    code_id_dict.update(dict(zip(temp_df_sz["f12"], temp_df_sz["sz_id"])))
-    params = {
-        "pn": "1",
-        "pz": "10000",
-        "po": "1",
-        "np": "2",
-        "ut": "bd1d9ddb04089700cf9c27f6f7426281",
-        "fltt": "2",
-        "invt": "2",
-        "fid": "f3",
-        "fs": "m:0 t:81 s:2048",
-        "fields": "f12",
-        "_": "1623833739532",
-    }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    if not data_json["data"]["diff"]:
-        return dict()
-    temp_df_sz = pd.DataFrame(data_json["data"]["diff"]).T
-    temp_df_sz["bj_id"] = 0
-    code_id_dict.update(dict(zip(temp_df_sz["f12"], temp_df_sz["bj_id"])))
-    code_id_dict = {
-        key: value - 1 if value == 1 else value + 1
-        for key, value in code_id_dict.items()
-    }
+    temp_df = fetch_paginated_data(url, params)
+    code_id_dict = dict(zip(temp_df["f12"], temp_df["f13"]))
     return code_id_dict
 
 
@@ -121,7 +72,6 @@ def index_zh_a_hist(
             "fqt": "0",
             "beg": "0",
             "end": "20500000",
-            "_": "1623766962675",
         }
     except KeyError:
         params = {
@@ -133,7 +83,6 @@ def index_zh_a_hist(
             "fqt": "0",
             "beg": "0",
             "end": "20500000",
-            "_": "1623766962675",
         }
         r = requests.get(url, params=params)
         data_json = r.json()
@@ -147,7 +96,6 @@ def index_zh_a_hist(
                 "fqt": "0",
                 "beg": "0",
                 "end": "20500000",
-                "_": "1623766962675",
             }
             r = requests.get(url, params=params)
             data_json = r.json()
@@ -161,7 +109,6 @@ def index_zh_a_hist(
                     "fqt": "0",
                     "beg": "0",
                     "end": "20500000",
-                    "_": "1623766962675",
                 }
                 r = requests.get(url, params=params)
                 data_json = r.json()
@@ -175,7 +122,6 @@ def index_zh_a_hist(
                         "fqt": "0",
                         "beg": "0",
                         "end": "20500000",
-                        "_": "1623766962675",
                     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -194,7 +140,6 @@ def index_zh_a_hist(
             "fqt": "0",
             "beg": "0",
             "end": "20500000",
-            "_": "1623766962675",
         }
         r = requests.get(url, params=params)
         data_json = r.json()
@@ -257,21 +202,17 @@ def index_zh_a_hist_min_em(
             params = {
                 "fields1": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13",
                 "fields2": "f51,f52,f53,f54,f55,f56,f57,f58",
-                "ut": "fa5fd1943c7b386f172d6893dbfba10b",
                 "iscr": "0",
                 "ndays": "5",
                 "secid": f"{code_id_dict[symbol]}.{symbol}",
-                "_": "1623766962675",
             }
         except KeyError:
             params = {
                 "fields1": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13",
                 "fields2": "f51,f52,f53,f54,f55,f56,f57,f58",
-                "ut": "fa5fd1943c7b386f172d6893dbfba10b",
                 "iscr": "0",
                 "ndays": "5",
                 "secid": f"1.{symbol}",
-                "_": "1623766962675",
             }
             r = requests.get(url, params=params)
             data_json = r.json()
@@ -279,11 +220,9 @@ def index_zh_a_hist_min_em(
                 params = {
                     "fields1": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13",
                     "fields2": "f51,f52,f53,f54,f55,f56,f57,f58",
-                    "ut": "fa5fd1943c7b386f172d6893dbfba10b",
                     "iscr": "0",
                     "ndays": "5",
                     "secid": f"0.{symbol}",
-                    "_": "1623766962675",
                 }
                 r = requests.get(url, params=params)
                 data_json = r.json()
@@ -291,11 +230,9 @@ def index_zh_a_hist_min_em(
                     params = {
                         "fields1": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13",
                         "fields2": "f51,f52,f53,f54,f55,f56,f57,f58",
-                        "ut": "fa5fd1943c7b386f172d6893dbfba10b",
                         "iscr": "0",
                         "ndays": "5",
                         "secid": f"47.{symbol}",
-                        "_": "1623766962675",
                     }
         r = requests.get(url, params=params)
         data_json = r.json()
@@ -310,7 +247,7 @@ def index_zh_a_hist_min_em(
             "最低",
             "成交量",
             "成交额",
-            "最新价",
+            "均价",
         ]
         temp_df.index = pd.to_datetime(temp_df["时间"], errors="coerce")
         temp_df = temp_df[start_date:end_date]
@@ -321,7 +258,7 @@ def index_zh_a_hist_min_em(
         temp_df["最低"] = pd.to_numeric(temp_df["最低"], errors="coerce")
         temp_df["成交量"] = pd.to_numeric(temp_df["成交量"], errors="coerce")
         temp_df["成交额"] = pd.to_numeric(temp_df["成交额"], errors="coerce")
-        temp_df["最新价"] = pd.to_numeric(temp_df["最新价"], errors="coerce")
+        temp_df["均价"] = pd.to_numeric(temp_df["均价"], errors="coerce")
         temp_df["时间"] = pd.to_datetime(temp_df["时间"]).astype(str)
         return temp_df
     else:
@@ -336,7 +273,6 @@ def index_zh_a_hist_min_em(
                 "fqt": "1",
                 "beg": "0",
                 "end": "20500000",
-                "_": "1630930917857",
             }
         except:  # noqa: E722
             params = {
@@ -348,7 +284,6 @@ def index_zh_a_hist_min_em(
                 "fqt": "1",
                 "beg": "0",
                 "end": "20500000",
-                "_": "1630930917857",
             }
             r = requests.get(url, params=params)
             data_json = r.json()
@@ -362,7 +297,6 @@ def index_zh_a_hist_min_em(
                     "fqt": "1",
                     "beg": "0",
                     "end": "20500000",
-                    "_": "1630930917857",
                 }
                 r = requests.get(url, params=params)
                 data_json = r.json()
@@ -376,7 +310,6 @@ def index_zh_a_hist_min_em(
                         "fqt": "1",
                         "beg": "0",
                         "end": "20500000",
-                        "_": "1630930917857",
                     }
         r = requests.get(url, params=params)
         data_json = r.json()
@@ -430,7 +363,7 @@ def index_zh_a_hist_min_em(
 
 if __name__ == "__main__":
     index_zh_a_hist_df = index_zh_a_hist(
-        symbol="800000",
+        symbol="932000",
         period="daily",
         start_date="19700101",
         end_date="22220101",
@@ -438,9 +371,9 @@ if __name__ == "__main__":
     print(index_zh_a_hist_df)
 
     index_zh_a_hist_min_em_df = index_zh_a_hist_min_em(
-        symbol="000001",
+        symbol="000003",
         period="1",
-        start_date="2025-02-24 09:30:00",
-        end_date="2025-02-24 19:00:00",
+        start_date="2025-03-17 09:30:00",
+        end_date="2025-03-17 19:00:00",
     )
     print(index_zh_a_hist_min_em_df)

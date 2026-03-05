@@ -5,6 +5,7 @@ Date: 2024/1/20 22:30
 Desc: FF-data-library
 https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html
 """
+
 from io import StringIO
 
 import pandas as pd
@@ -23,26 +24,31 @@ def article_ff_crr() -> pd.DataFrame:
     res = requests.get(ff_home_url)
     # first table
     list_index = (
-        pd.read_html(StringIO(res.text), header=0, index_col=0)[4].iloc[2, :].index.tolist()
+        pd.read_html(StringIO(res.text), header=0, index_col=0)[4]
+        .iloc[2, :]
+        .index.tolist()
     )
     list_0 = [
         item
         for item in pd.read_html(StringIO(res.text), header=0, index_col=0)[4]
-                    .iloc[0, :].iloc[0]
+        .iloc[0, :]
+        .iloc[0]
         .split(" ")
         if item != ""
     ]
     list_1 = [
         item
         for item in pd.read_html(StringIO(res.text), header=0, index_col=0)[4]
-                    .iloc[0, :].iloc[1]
+        .iloc[0, :]
+        .iloc[1]
         .split(" ")
         if item != ""
     ]
     list_2 = [
         item
         for item in pd.read_html(StringIO(res.text), header=0, index_col=0)[4]
-                    .iloc[0, :].iloc[2]
+        .iloc[0, :]
+        .iloc[2]
         .split(" ")
         if item != ""
     ]
@@ -63,26 +69,31 @@ def article_ff_crr() -> pd.DataFrame:
 
     # second table
     list_index = (
-        pd.read_html(StringIO(res.text), header=0, index_col=0)[4].iloc[1, :].index.tolist()
+        pd.read_html(StringIO(res.text), header=0, index_col=0)[4]
+        .iloc[1, :]
+        .index.tolist()
     )
     list_0 = [
         item
         for item in pd.read_html(StringIO(res.text), header=0, index_col=0)[4]
-                    .iloc[1, :].iloc[0]
+        .iloc[1, :]
+        .iloc[0]
         .split(" ")
         if item != ""
     ]
     list_1 = [
         item
         for item in pd.read_html(StringIO(res.text), header=0, index_col=0)[4]
-                    .iloc[1, :].iloc[1]
+        .iloc[1, :]
+        .iloc[1]
         .split(" ")
         if item != ""
     ]
     list_2 = [
         item
         for item in pd.read_html(StringIO(res.text), header=0, index_col=0)[4]
-                    .iloc[1, :].iloc[2]
+        .iloc[1, :]
+        .iloc[2]
         .split(" ")
         if item != ""
     ]

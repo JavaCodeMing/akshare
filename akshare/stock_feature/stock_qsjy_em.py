@@ -5,6 +5,7 @@ Date: 2022/9/21 16:49
 Desc: 东方财富网-数据中心-特色数据-券商业绩月报
 http://data.eastmoney.com/other/qsjy.html
 """
+
 import pandas as pd
 import requests
 
@@ -71,13 +72,21 @@ def stock_qsjy_em(date: str = "20200731") -> pd.DataFrame:
     temp_df["当月净利润-净利润"] = pd.to_numeric(temp_df["当月净利润-净利润"])
     temp_df["当月净利润-同比增长"] = pd.to_numeric(temp_df["当月净利润-同比增长"])
     temp_df["当月净利润-环比增长"] = pd.to_numeric(temp_df["当月净利润-环比增长"])
-    temp_df["当年累计净利润-累计净利润"] = pd.to_numeric(temp_df["当年累计净利润-累计净利润"])
-    temp_df["当年累计净利润-同比增长"] = pd.to_numeric(temp_df["当年累计净利润-同比增长"])
+    temp_df["当年累计净利润-累计净利润"] = pd.to_numeric(
+        temp_df["当年累计净利润-累计净利润"]
+    )
+    temp_df["当年累计净利润-同比增长"] = pd.to_numeric(
+        temp_df["当年累计净利润-同比增长"]
+    )
     temp_df["当月营业收入-营业收入"] = pd.to_numeric(temp_df["当月营业收入-营业收入"])
     temp_df["当月营业收入-环比增长"] = pd.to_numeric(temp_df["当月营业收入-环比增长"])
     temp_df["当月营业收入-同比增长"] = pd.to_numeric(temp_df["当月营业收入-同比增长"])
-    temp_df["当年累计营业收入-累计营业收入"] = pd.to_numeric(temp_df["当年累计营业收入-累计营业收入"])
-    temp_df["当年累计营业收入-同比增长"] = pd.to_numeric(temp_df["当年累计营业收入-同比增长"])
+    temp_df["当年累计营业收入-累计营业收入"] = pd.to_numeric(
+        temp_df["当年累计营业收入-累计营业收入"]
+    )
+    temp_df["当年累计营业收入-同比增长"] = pd.to_numeric(
+        temp_df["当年累计营业收入-同比增长"]
+    )
     temp_df["净资产-净资产"] = pd.to_numeric(temp_df["净资产-净资产"])
     temp_df["净资产-同比增长"] = pd.to_numeric(temp_df["净资产-同比增长"])
     return temp_df

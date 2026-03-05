@@ -74,11 +74,11 @@ def car_sale_rank_gasgoo(symbol: str = "车企榜", date: str = "202109") -> pd.
 
 
 if __name__ == "__main__":
-    car_sale_rank_gasgoo_df = car_sale_rank_gasgoo(symbol="品牌榜", date="202311")
+    car_sale_rank_gasgoo_df = car_sale_rank_gasgoo(symbol="品牌榜", date="202504")
     print(car_sale_rank_gasgoo_df)
 
-    car_sale_rank_gasgoo_df = car_sale_rank_gasgoo(symbol="车型榜", date="202311")
+    car_sale_rank_gasgoo_df = car_sale_rank_gasgoo(symbol="车型榜", date="202504")
     print(car_sale_rank_gasgoo_df)
 
-    car_sale_rank_gasgoo_df = car_sale_rank_gasgoo(symbol="车企榜", date="202311")
+    car_sale_rank_gasgoo_df = car_sale_rank_gasgoo(symbol="车企榜", date="202504")
     print(car_sale_rank_gasgoo_df)

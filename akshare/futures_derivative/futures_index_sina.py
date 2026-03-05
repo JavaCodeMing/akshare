@@ -5,6 +5,7 @@ Date: 2024/3/1 23:00
 Desc: 新浪财经-期货的主力合约数据
 https://finance.sina.com.cn/futuremarket/index.shtml
 """
+
 from io import StringIO
 
 import pandas as pd
@@ -30,7 +31,9 @@ def zh_subscribe_exchange_symbol(symbol: str = "dce") -> pd.DataFrame:
     r = requests.get(zh_subscribe_exchange_symbol_url)
     r.encoding = "gb2312"
     data_text = r.text
-    data_json = demjson.decode(data_text[data_text.find("{"): data_text.find("};") + 1])
+    data_json = demjson.decode(
+        data_text[data_text.find("{") : data_text.find("};") + 1]
+    )
     if symbol == "czce":
         data_json["czce"].remove("郑州商品交易所")
         return pd.DataFrame(data_json["czce"])
@@ -68,14 +71,14 @@ def match_main_contract(symbol: str = "shfe") -> pd.DataFrame:
         data_df = pd.DataFrame(data_json)
         try:
             main_contract = data_df[
-                                data_df["name"].str.contains("连续")
-                                & data_df["symbol"]
-                                  .str.extract(r"([\w])(\d)")
-                                  .iloc[:, 1]
-                                .str.contains("0")
-                                ].iloc[0, :3]
+                data_df["name"].str.contains("连续")
+                & data_df["symbol"]
+                .str.extract(r"([\w])(\d)")
+                .iloc[:, 1]
+                .str.contains("0")
+            ].iloc[0, :3]
             subscribe_list.append(main_contract)
-        except:
+        except:  # noqa: E722
             # print(item, "无主力连续合约")
             continue
     # print("主力连续合约获取成功")
@@ -98,9 +101,9 @@ def futures_display_main_sina() -> pd.DataFrame:
 
 
 def futures_main_sina(
-        symbol: str = "V0",
-        start_date: str = "19900101",
-        end_date: str = "22220101",
+    symbol: str = "V0",
+    start_date: str = "19900101",
+    end_date: str = "22220101",
 ) -> pd.DataFrame:
     """
     新浪财经-期货-主力连续日数据
@@ -119,9 +122,18 @@ def futures_main_sina(
     url = f"https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var%20_{symbol}{trade_date}=/InnerFuturesNewService.getDailyKLine?symbol={symbol}&_={trade_date}"
     r = requests.get(url)
     data_text = r.text
-    data_json = data_text[data_text.find("([") + 1: data_text.rfind("])") + 1]
+    data_json = data_text[data_text.find("([") + 1 : data_text.rfind("])") + 1]
     temp_df = pd.read_json(StringIO(data_json))
-    temp_df.columns = ["日期", "开盘价", "最高价", "最低价", "收盘价", "成交量", "持仓量", "动态结算价"]
+    temp_df.columns = [
+        "日期",
+        "开盘价",
+        "最高价",
+        "最低价",
+        "收盘价",
+        "成交量",
+        "持仓量",
+        "动态结算价",
+    ]
     temp_df["日期"] = pd.to_datetime(temp_df["日期"], errors="coerce").dt.date
     temp_df.set_index(keys=["日期"], inplace=True)
     temp_df.index = pd.to_datetime(temp_df.index)

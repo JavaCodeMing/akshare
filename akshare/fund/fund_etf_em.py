@@ -11,6 +11,8 @@ from functools import lru_cache
 import pandas as pd
 import requests
 
+from akshare.utils.func import fetch_paginated_data
+
 
 @lru_cache()
 def _fund_etf_code_id_map_em() -> dict:
@@ -23,21 +25,18 @@ def _fund_etf_code_id_map_em() -> dict:
     url = "https://88.push2.eastmoney.com/api/qt/clist/get"
     params = {
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
         "wbp2u": "|0|0|0|web",
         "fid": "f3",
         "fs": "b:MK0021,b:MK0022,b:MK0023,b:MK0024",
-        "fields": "f12,f13",
-        "_": "1672806290972",
+        "fields": "f3,f12,f13",
     }
-    r = requests.get(url, params=params, timeout=15)
-    data_json = r.json()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
+    temp_df = fetch_paginated_data(url, params)
     temp_dict = dict(zip(temp_df["f12"], temp_df["f13"]))
     return temp_dict
 
@@ -52,9 +51,9 @@ def fund_etf_spot_em() -> pd.DataFrame:
     url = "https://88.push2.eastmoney.com/api/qt/clist/get"
     params = {
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
@@ -69,11 +68,8 @@ def fund_etf_spot_em() -> pd.DataFrame:
             "f72,f75,f78,f81,f84,f87,f115,f124,f128,"
             "f136,f152,f184,f297,f402,f441"
         ),
-        "_": "1672806290972",
     }
-    r = requests.get(url, timeout=15, params=params)
-    data_json = r.json()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
+    temp_df = fetch_paginated_data(url, params)
     temp_df.rename(
         columns={
             "f12": "代码",
@@ -218,8 +214,24 @@ def fund_etf_spot_em() -> pd.DataFrame:
         .dt.tz_localize("UTC")
         .dt.tz_convert("Asia/Shanghai")
     )
-
     return temp_df
+
+
+def get_market_id(symbol: str) -> int:
+    """
+    东方财富-ETF市场标识判断
+    :param symbol: ETF 代码
+    :type symbol: str
+    :return: ETF 代码和市场标识（1:上证 0:深证）
+    :rtype: int
+    """
+    if symbol.startswith(("0", "1", "3", "2", "5", "6")):
+        if symbol.startswith(("5", "6")):
+            return 1
+        else:
+            return 0
+    else:
+        return 1
 
 
 def fund_etf_hist_em(
@@ -245,7 +257,7 @@ def fund_etf_hist_em(
     :return: 每日行情
     :rtype: pandas.DataFrame
     """
-    code_id_dict = _fund_etf_code_id_map_em()
+    # code_id_dict = _fund_etf_code_id_map_em()
     adjust_dict = {"qfq": "1", "hfq": "2", "": "0"}
     period_dict = {"daily": "101", "weekly": "102", "monthly": "103"}
     url = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
@@ -257,10 +269,10 @@ def fund_etf_hist_em(
         "fqt": adjust_dict[adjust],
         "beg": start_date,
         "end": end_date,
-        "_": "1623766962675",
     }
     try:
-        market_id = code_id_dict[symbol]
+        # market_id = code_id_dict[symbol]
+        market_id = get_market_id(symbol)
         params.update({"secid": f"{market_id}.{symbol}"})
         r = requests.get(url, timeout=15, params=params)
         data_json = r.json()
@@ -328,18 +340,18 @@ def fund_etf_hist_min_em(
     :return: 每日分时行情
     :rtype: pandas.DataFrame
     """
-    code_id_dict = _fund_etf_code_id_map_em()
+    # code_id_dict = _fund_etf_code_id_map_em()
     # 商品期货类 ETF
-    code_id_dict.update(
-        {
-            "159980": "0",
-            "159981": "0",
-            "159985": "0",
-            "511090": "1",
-            "511220": "1",
-            "511380": "1",
-        }
-    )
+    # code_id_dict.update(
+    #     {
+    #         "159980": "0",
+    #         "159981": "0",
+    #         "159985": "0",
+    #         "511090": "1",
+    #         "511220": "1",
+    #         "511380": "1",
+    #     }
+    # )
     adjust_map = {
         "": "0",
         "qfq": "1",
@@ -353,8 +365,7 @@ def fund_etf_hist_min_em(
             "ut": "7eea3edcaed734bea9cbfc24409ed989",
             "ndays": "5",
             "iscr": "0",
-            "secid": f"{code_id_dict[symbol]}.{symbol}",
-            "_": "1623766962675",
+            "secid": f"{get_market_id(symbol)}.{symbol}",
         }
         r = requests.get(url, timeout=15, params=params)
         data_json = r.json()
@@ -391,10 +402,9 @@ def fund_etf_hist_min_em(
             "ut": "7eea3edcaed734bea9cbfc24409ed989",
             "klt": period,
             "fqt": adjust_map[adjust],
-            "secid": f"{code_id_dict[symbol]}.{symbol}",
+            "secid": f"{get_market_id(symbol)}.{symbol}",
             "beg": "0",
             "end": "20500000",
-            "_": "1630930917857",
         }
         r = requests.get(url, timeout=15, params=params)
         data_json = r.json()
@@ -481,7 +491,7 @@ if __name__ == "__main__":
         symbol="511380",
         period="1",
         adjust="",
-        start_date="2024-09-04 09:30:00",
-        end_date="2024-09-04 17:40:00",
+        start_date="2025-03-10 09:30:00",
+        end_date="2025-03-10 17:40:00",
     )
     print(fund_etf_hist_min_em_df)

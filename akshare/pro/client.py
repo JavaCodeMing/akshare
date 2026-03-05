@@ -4,6 +4,7 @@
 Date: 2019/11/10 22:52
 Desc: 数据接口源代码
 """
+
 from functools import partial
 from urllib import parse
 
@@ -12,7 +13,6 @@ import requests
 
 
 class DataApi:
-
     __token = ""
     __http_url = "https://api.qhkch.com"
 
@@ -49,8 +49,10 @@ class DataApi:
         if fields == "":
             try:
                 return pd.DataFrame(data_json)
-            except ValueError as e:
-                result_df = pd.DataFrame.from_dict(data_json, orient="index", columns=[api_name])
+            except ValueError:
+                result_df = pd.DataFrame.from_dict(
+                    data_json, orient="index", columns=[api_name]
+                )
                 return result_df
         else:  # 此处增加处理
             if api_name == "variety_all_positions":
@@ -68,5 +70,5 @@ class DataApi:
         return partial(self.query, name)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

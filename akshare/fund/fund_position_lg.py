@@ -5,6 +5,7 @@ Date: 2023/4/5 22:05
 Desc: 乐咕乐股-基金仓位
 https://legulegu.com/stockdata/fund-position/pos-stock
 """
+
 import pandas as pd
 import requests
 
@@ -20,11 +21,16 @@ def fund_stock_position_lg() -> pd.DataFrame:
     """
     url = "https://legulegu.com/api/stockdata/fund-position"
     token = get_token_lg()
-    params = {"token": token, "type": "pos_stock", "category": "总仓位", "marketId": "5"}
+    params = {
+        "token": token,
+        "type": "pos_stock",
+        "category": "总仓位",
+        "marketId": "5",
+    }
     r = requests.get(
         url,
         params=params,
-        **get_cookie_csrf(url="https://legulegu.com/stockdata/fund-position/pos-stock")
+        **get_cookie_csrf(url="https://legulegu.com/stockdata/fund-position/pos-stock"),
     )
     data_json = r.json()
     temp_df = pd.DataFrame(data_json)
@@ -36,7 +42,7 @@ def fund_stock_position_lg() -> pd.DataFrame:
             "position",
         ]
     ]
-    temp_df['date'] = pd.to_datetime(temp_df['date']).dt.date
+    temp_df["date"] = pd.to_datetime(temp_df["date"]).dt.date
     temp_df["close"] = pd.to_numeric(temp_df["close"], errors="coerce")
     temp_df["position"] = pd.to_numeric(temp_df["position"], errors="coerce")
     return temp_df
@@ -62,7 +68,7 @@ def fund_balance_position_lg() -> pd.DataFrame:
         params=params,
         **get_cookie_csrf(
             url="https://legulegu.com/stockdata/fund-position/pos-pingheng"
-        )
+        ),
     )
     data_json = r.json()
     temp_df = pd.DataFrame(data_json)
@@ -74,7 +80,7 @@ def fund_balance_position_lg() -> pd.DataFrame:
             "position",
         ]
     ]
-    temp_df['date'] = pd.to_datetime(temp_df['date']).dt.date
+    temp_df["date"] = pd.to_datetime(temp_df["date"]).dt.date
     temp_df["close"] = pd.to_numeric(temp_df["close"], errors="coerce")
     temp_df["position"] = pd.to_numeric(temp_df["position"], errors="coerce")
     return temp_df
@@ -89,13 +95,18 @@ def fund_linghuo_position_lg() -> pd.DataFrame:
     """
     url = "https://legulegu.com/api/stockdata/fund-position"
     token = get_token_lg()
-    params = {"token": token, "type": "pos_linghuo", "category": "总仓位", "marketId": "5"}
+    params = {
+        "token": token,
+        "type": "pos_linghuo",
+        "category": "总仓位",
+        "marketId": "5",
+    }
     r = requests.get(
         url,
         params=params,
         **get_cookie_csrf(
             url="https://legulegu.com/stockdata/fund-position/pos-linghuo"
-        )
+        ),
     )
     data_json = r.json()
     temp_df = pd.DataFrame(data_json)
@@ -107,7 +118,7 @@ def fund_linghuo_position_lg() -> pd.DataFrame:
             "position",
         ]
     ]
-    temp_df['date'] = pd.to_datetime(temp_df['date']).dt.date
+    temp_df["date"] = pd.to_datetime(temp_df["date"]).dt.date
     temp_df["close"] = pd.to_numeric(temp_df["close"], errors="coerce")
     temp_df["position"] = pd.to_numeric(temp_df["position"], errors="coerce")
     return temp_df

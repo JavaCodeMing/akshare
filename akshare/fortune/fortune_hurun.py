@@ -5,6 +5,7 @@ Date: 2023/12/22 20:00
 Desc: 胡润排行榜
 https://www.hurun.net/
 """
+
 import warnings
 
 import pandas as pd
@@ -76,7 +77,7 @@ def hurun_rank(indicator: str = "胡润百富榜", year: str = "2023") -> pd.Dat
                 temp_df = pd.DataFrame(data_json["rows"])
                 offset = offset + 20
                 big_df = pd.concat([big_df, temp_df], ignore_index=True)
-            except requests.exceptions.JSONDecodeError as e:
+            except requests.exceptions.JSONDecodeError:
                 offset = offset + 40
                 continue
         big_df.rename(

@@ -5,10 +5,9 @@ Date: 2021/12/19 13:09
 Desc: 东方财富网-数据中心-主力数据-基金持仓
 http://data.eastmoney.com/zlsj/2020-06-30-1-2.html
 """
+
 import pandas as pd
 import requests
-
-from akshare.utils import demjson
 
 
 def stock_report_fund_hold(

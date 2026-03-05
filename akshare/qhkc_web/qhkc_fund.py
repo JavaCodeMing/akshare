@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 """
-Date: 2019/9/30 13:58
+Date: 2025/4/10 18:00
 Desc: 奇货可查网站目前已经商业化运营, 特提供奇货可查-资金数据接口, 方便您程序化调用
 注：期货价格为收盘价; 现货价格来自网络; 基差=现货价格-期货价格; 基差率=(现货价格-期货价格)/现货价格 * 100 %.
 """
+
 import datetime
 from typing import AnyStr
 
@@ -27,7 +28,8 @@ def get_qhkc_fund_bs(
     可获取数据的时间段为:"2016-10-10:2019-09-30"
     :param url: 网址
     :param date: 中文名称
-    :return: pd.DataFrame
+    :return: 净持仓分布
+    :rtype: pandas.DataFrame
     symbol_df
        name       value        ratio      date
        IC  1552535406     0.195622  20190924
@@ -124,7 +126,8 @@ def get_qhkc_fund_position(
     可获取数据的时间段为:"2016-10-10:2019-09-30"
     :param url: 网址
     :param date: 中文名称
-    :return: pd.DataFrame
+    :return: 总持仓分布
+    :rtype: pandas.DataFrame
     symbol_df
        name       value        ratio      date
        IC  1552535406     0.195622  20190924
@@ -321,7 +324,8 @@ def get_qhkc_fund_money_change(
     可获取数据的时间段为:"2016-10-10:2019-09-30"
     :param url: 网址
     :param date: 中文名称
-    :return: pd.DataFrame
+    :return: 成交额分布
+    :rtype: pandas.DataFrame
         name        value        ratio        date
        沪镍    2.292e+10     0.145963  2019-09-25
        沪银  1.22788e+10    0.0781956  2019-09-25
@@ -417,5 +421,5 @@ if __name__ == "__main__":
     # print(df1)
     # print(df2)
 
-    df = get_qhkc_fund_money_change(20211208)
-    print(df)
+    get_qhkc_fund_money_change_df = get_qhkc_fund_money_change(20211208)
+    print(get_qhkc_fund_money_change_df)

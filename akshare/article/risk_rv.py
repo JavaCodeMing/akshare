@@ -4,6 +4,7 @@
 Date: 2024/1/20 20:51
 Desc: 修大成主页-Risk Lab-Realized Volatility; Oxford-Man Institute of Quantitative Finance Realized Library
 """
+
 import json
 
 import pandas as pd
@@ -64,11 +65,8 @@ def article_oman_rv(symbol: str = "FTSE", index: str = "rk_th2") -> pd.DataFrame
     res = requests.get(url)
     soup = BeautifulSoup(res.text, "lxml")
     soup_text = soup.find("p").get_text()
-    data_json = json.loads(soup_text[soup_text.find("{"): soup_text.rfind("};") + 1])
+    data_json = json.loads(soup_text[soup_text.find("{") : soup_text.rfind("};") + 1])
     date_list = data_json[f".{symbol}"]["dates"]
-    title_fore = data_json[f".{symbol}"][index]["name"]
-    title_last = data_json[f".{symbol}"][index]["measure"]
-    title_list = title_fore + "-" + title_last
     temp_df = pd.DataFrame([date_list, data_json[f".{symbol}"][index]["data"]]).T
     temp_df.index = pd.to_datetime(temp_df.iloc[:, 0], unit="ms")
     temp_df = temp_df.iloc[:, 1]
@@ -107,10 +105,7 @@ def article_oman_rv_short(symbol: str = "FTSE") -> pd.DataFrame:
     res = requests.get(url, headers=headers, verify=False)
     soup = BeautifulSoup(res.text, "lxml")
     soup_text = soup.find("p").get_text()
-    data_json = json.loads(soup_text[soup_text.find("{"): soup_text.rfind("}") + 1])
-    title_fore = data_json[f".{symbol}"]["name"]
-    title_last = data_json[f".{symbol}"]["measure"]
-    title_list = title_fore + "-" + title_last
+    data_json = json.loads(soup_text[soup_text.find("{") : soup_text.rfind("}") + 1])
     temp_df = pd.DataFrame(data_json[f".{symbol}"]["data"])
     temp_df.index = pd.to_datetime(temp_df.iloc[:, 0], unit="ms")
     temp_df = temp_df.iloc[:, 1]

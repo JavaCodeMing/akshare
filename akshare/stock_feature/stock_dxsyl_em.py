@@ -8,6 +8,7 @@ https://data.eastmoney.com/xg/xg/dxsyl.html
 东方财富网-数据中心-新股数据-新股申购与中签查询
 https://data.eastmoney.com/xg/xg/default_2.html
 """
+
 import pandas as pd
 import requests
 
@@ -93,14 +94,30 @@ def stock_dxsyl_em() -> pd.DataFrame:
     ]
     big_df["发行价"] = pd.to_numeric(big_df["发行价"], errors="coerce")
     big_df["最新价"] = pd.to_numeric(big_df["最新价"], errors="coerce")
-    big_df["网上-发行中签率"] = pd.to_numeric(big_df["网上-发行中签率"], errors="coerce")
-    big_df["网上-有效申购股数"] = pd.to_numeric(big_df["网上-有效申购股数"], errors="coerce")
-    big_df["网上-有效申购户数"] = pd.to_numeric(big_df["网上-有效申购户数"], errors="coerce")
-    big_df["网上-超额认购倍数"] = pd.to_numeric(big_df["网上-超额认购倍数"], errors="coerce")
-    big_df["网下-配售中签率"] = pd.to_numeric(big_df["网下-配售中签率"], errors="coerce")
-    big_df["网下-有效申购股数"] = pd.to_numeric(big_df["网下-有效申购股数"], errors="coerce")
-    big_df["网下-有效申购户数"] = pd.to_numeric(big_df["网下-有效申购户数"], errors="coerce")
-    big_df["网下-配售认购倍数"] = pd.to_numeric(big_df["网下-配售认购倍数"], errors="coerce")
+    big_df["网上-发行中签率"] = pd.to_numeric(
+        big_df["网上-发行中签率"], errors="coerce"
+    )
+    big_df["网上-有效申购股数"] = pd.to_numeric(
+        big_df["网上-有效申购股数"], errors="coerce"
+    )
+    big_df["网上-有效申购户数"] = pd.to_numeric(
+        big_df["网上-有效申购户数"], errors="coerce"
+    )
+    big_df["网上-超额认购倍数"] = pd.to_numeric(
+        big_df["网上-超额认购倍数"], errors="coerce"
+    )
+    big_df["网下-配售中签率"] = pd.to_numeric(
+        big_df["网下-配售中签率"], errors="coerce"
+    )
+    big_df["网下-有效申购股数"] = pd.to_numeric(
+        big_df["网下-有效申购股数"], errors="coerce"
+    )
+    big_df["网下-有效申购户数"] = pd.to_numeric(
+        big_df["网下-有效申购户数"], errors="coerce"
+    )
+    big_df["网下-配售认购倍数"] = pd.to_numeric(
+        big_df["网下-配售认购倍数"], errors="coerce"
+    )
     big_df["总发行数量"] = pd.to_numeric(big_df["总发行数量"], errors="coerce")
     big_df["开盘溢价"] = pd.to_numeric(big_df["开盘溢价"], errors="coerce")
     big_df["首日涨幅"] = pd.to_numeric(big_df["首日涨幅"], errors="coerce")
@@ -151,47 +168,47 @@ def stock_xgsglb_em(symbol: str = "全部股票") -> pd.DataFrame:
 
         big_df.rename(
             columns={
-                'ORG_CODE': '-',
-                'SECURITY_CODE': '代码',
-                'SECUCODE': '带市场标识股票代码',
-                'SECURITY_NAME_ABBR': '简称',
-                'APPLY_CODE': '申购代码',
-                'EXPECT_ISSUE_NUM': '发行总数',
-                'PRICE_WAY': '定价方式',
-                'ISSUE_PRICE': '发行价格',
-                'ISSUE_PE_RATIO': '发行市盈率',
-                'APPLY_DATE': '申购日',
-                'RESULT_NOTICE_DATE': '发行结果公告日期',
-                'SELECT_LISTING_DATE': '上市首日-上市日',
-                'ONLINE_ISSUE_NUM': '网上-发行数量',
-                'APPLY_AMT_UPPER': '网上-顶格所需资金',
-                'APPLY_NUM_UPPER': '网上-申购上限',
-                'ONLINE_PAY_DATE': '网上申购缴款日期',
-                'ONLINE_REFUND_DATE': '网上申购资金退款日',
-                'INFO_CODE': '-',
-                'ONLINE_ISSUE_LWR': '中签率',
-                'NEWEST_PRICE': '最新价格-价格',
-                'CLOSE_PRICE': '首日收盘价',
-                'INITIAL_MULTIPLE': '-',
-                'PER_SHARES_INCOME': '上市首日-每百股获利',
-                'LD_CLOSE_CHANGE': '上市首日-涨幅',
-                'TURNOVERRATE': '首日换手率',
-                'AMPLITUDE': '首日振幅',
-                'ONLINE_APPLY_LOWER': '-',
-                'MAIN_BUSINESS': '主营业务',
-                'INDUSTRY_PE_RATIO': '行业市盈率',
-                'APPLY_AMT_100': '稳获百股需配资金',
-                'TAKE_UP_TIME': '资金占用时间',
-                'CAPTURE_PROFIT': '上市首日-约合年化收益',
-                'APPLY_SHARE_100': '每获配百股需配股数',
-                'AVERAGE_PRICE': '上市首日-均价',
-                'ORG_VAN': '参与申购人数',
-                'VA_AMT': '参与申购资金',
-                'ISSUE_PRICE_ADJFACTOR': '-'
+                "ORG_CODE": "-",
+                "SECURITY_CODE": "代码",
+                "SECUCODE": "带市场标识股票代码",
+                "SECURITY_NAME_ABBR": "简称",
+                "APPLY_CODE": "申购代码",
+                "EXPECT_ISSUE_NUM": "发行总数",
+                "PRICE_WAY": "定价方式",
+                "ISSUE_PRICE": "发行价格",
+                "ISSUE_PE_RATIO": "发行市盈率",
+                "APPLY_DATE": "申购日",
+                "RESULT_NOTICE_DATE": "发行结果公告日期",
+                "SELECT_LISTING_DATE": "上市首日-上市日",
+                "ONLINE_ISSUE_NUM": "网上-发行数量",
+                "APPLY_AMT_UPPER": "网上-顶格所需资金",
+                "APPLY_NUM_UPPER": "网上-申购上限",
+                "ONLINE_PAY_DATE": "网上申购缴款日期",
+                "ONLINE_REFUND_DATE": "网上申购资金退款日",
+                "INFO_CODE": "-",
+                "ONLINE_ISSUE_LWR": "中签率",
+                "NEWEST_PRICE": "最新价格-价格",
+                "CLOSE_PRICE": "首日收盘价",
+                "INITIAL_MULTIPLE": "-",
+                "PER_SHARES_INCOME": "上市首日-每百股获利",
+                "LD_CLOSE_CHANGE": "上市首日-涨幅",
+                "TURNOVERRATE": "首日换手率",
+                "AMPLITUDE": "首日振幅",
+                "ONLINE_APPLY_LOWER": "-",
+                "MAIN_BUSINESS": "主营业务",
+                "INDUSTRY_PE_RATIO": "行业市盈率",
+                "APPLY_AMT_100": "稳获百股需配资金",
+                "TAKE_UP_TIME": "资金占用时间",
+                "CAPTURE_PROFIT": "上市首日-约合年化收益",
+                "APPLY_SHARE_100": "每获配百股需配股数",
+                "AVERAGE_PRICE": "上市首日-均价",
+                "ORG_VAN": "参与申购人数",
+                "VA_AMT": "参与申购资金",
+                "ISSUE_PRICE_ADJFACTOR": "-",
             },
-            inplace=True
+            inplace=True,
         )
-        big_df['最新价格-累计涨幅'] = big_df['首日收盘价'] / big_df['最新价格-价格']
+        big_df["最新价格-累计涨幅"] = big_df["首日收盘价"] / big_df["最新价格-价格"]
 
         big_df = big_df[
             [
@@ -205,39 +222,61 @@ def stock_xgsglb_em(symbol: str = "全部股票") -> pd.DataFrame:
                 "发行价格",
                 "申购日",
                 "中签率",
-                '稳获百股需配资金',
-                '最新价格-价格',
-                '最新价格-累计涨幅',
-                '上市首日-上市日',
-                '上市首日-均价',
-                '上市首日-涨幅',
-                '上市首日-每百股获利',
-                '上市首日-约合年化收益',
-                '发行市盈率',
-                '行业市盈率',
+                "稳获百股需配资金",
+                "最新价格-价格",
+                "最新价格-累计涨幅",
+                "上市首日-上市日",
+                "上市首日-均价",
+                "上市首日-涨幅",
+                "上市首日-每百股获利",
+                "上市首日-约合年化收益",
+                "发行市盈率",
+                "行业市盈率",
                 "参与申购资金",
                 "参与申购人数",
             ]
         ]
         big_df["发行总数"] = pd.to_numeric(big_df["发行总数"], errors="coerce")
-        big_df["网上-发行数量"] = pd.to_numeric(big_df["网上-发行数量"], errors="coerce")
-        big_df["网上-申购上限"] = pd.to_numeric(big_df["网上-申购上限"], errors="coerce")
-        big_df["网上-顶格所需资金"] = pd.to_numeric(big_df["网上-顶格所需资金"], errors="coerce")
+        big_df["网上-发行数量"] = pd.to_numeric(
+            big_df["网上-发行数量"], errors="coerce"
+        )
+        big_df["网上-申购上限"] = pd.to_numeric(
+            big_df["网上-申购上限"], errors="coerce"
+        )
+        big_df["网上-顶格所需资金"] = pd.to_numeric(
+            big_df["网上-顶格所需资金"], errors="coerce"
+        )
         big_df["发行价格"] = pd.to_numeric(big_df["发行价格"], errors="coerce")
         big_df["中签率"] = pd.to_numeric(big_df["中签率"], errors="coerce")
-        big_df["稳获百股需配资金"] = pd.to_numeric(big_df["稳获百股需配资金"], errors="coerce")
-        big_df["最新价格-价格"] = pd.to_numeric(big_df["最新价格-价格"], errors="coerce")
-        big_df["最新价格-累计涨幅"] = pd.to_numeric(big_df["最新价格-累计涨幅"], errors="coerce")
-        big_df["上市首日-均价"] = pd.to_numeric(big_df["上市首日-均价"], errors="coerce")
-        big_df["上市首日-涨幅"] = pd.to_numeric(big_df["上市首日-涨幅"], errors="coerce")
-        big_df["上市首日-每百股获利"] = pd.to_numeric(big_df["上市首日-每百股获利"], errors="coerce")
-        big_df["上市首日-约合年化收益"] = pd.to_numeric(big_df["上市首日-约合年化收益"], errors="coerce")
+        big_df["稳获百股需配资金"] = pd.to_numeric(
+            big_df["稳获百股需配资金"], errors="coerce"
+        )
+        big_df["最新价格-价格"] = pd.to_numeric(
+            big_df["最新价格-价格"], errors="coerce"
+        )
+        big_df["最新价格-累计涨幅"] = pd.to_numeric(
+            big_df["最新价格-累计涨幅"], errors="coerce"
+        )
+        big_df["上市首日-均价"] = pd.to_numeric(
+            big_df["上市首日-均价"], errors="coerce"
+        )
+        big_df["上市首日-涨幅"] = pd.to_numeric(
+            big_df["上市首日-涨幅"], errors="coerce"
+        )
+        big_df["上市首日-每百股获利"] = pd.to_numeric(
+            big_df["上市首日-每百股获利"], errors="coerce"
+        )
+        big_df["上市首日-约合年化收益"] = pd.to_numeric(
+            big_df["上市首日-约合年化收益"], errors="coerce"
+        )
         big_df["发行市盈率"] = pd.to_numeric(big_df["发行市盈率"], errors="coerce")
         big_df["行业市盈率"] = pd.to_numeric(big_df["行业市盈率"], errors="coerce")
         big_df["参与申购资金"] = pd.to_numeric(big_df["参与申购资金"], errors="coerce")
         big_df["参与申购人数"] = pd.to_numeric(big_df["参与申购人数"], errors="coerce")
         big_df["申购日"] = pd.to_datetime(big_df["申购日"], errors="coerce").dt.date
-        big_df["上市首日-上市日"] = pd.to_datetime(big_df["上市首日-上市日"], errors="coerce").dt.date
+        big_df["上市首日-上市日"] = pd.to_datetime(
+            big_df["上市首日-上市日"], errors="coerce"
+        ).dt.date
         return big_df
     else:
         params = {
@@ -261,15 +300,15 @@ def stock_xgsglb_em(symbol: str = "全部股票") -> pd.DataFrame:
             r = requests.get(url, params=params)
             data_json = r.json()
             temp_df = pd.DataFrame(data_json["result"]["data"])
-            big_df = pd.concat([big_df, temp_df], ignore_index=True)
+            big_df = pd.concat(objs=[big_df, temp_df], ignore_index=True)
         big_df.rename(
             columns={
                 "SECURITY_CODE": "股票代码",
                 "SECURITY_NAME": "股票简称",
                 "TRADE_MARKET_CODE": "-",
                 "APPLY_CODE": "申购代码",
-                "TRADE_MARKET": "-",
-                "MARKET_TYPE": "-",
+                "TRADE_MARKET": "交易所",
+                "MARKET_TYPE": "板块",
                 "ORG_TYPE": "-",
                 "ISSUE_NUM": "发行总数",
                 "ONLINE_ISSUE_NUM": "网上发行",
@@ -320,6 +359,8 @@ def stock_xgsglb_em(symbol: str = "全部股票") -> pd.DataFrame:
                 "股票代码",
                 "股票简称",
                 "申购代码",
+                "交易所",
+                "板块",
                 "发行总数",
                 "网上发行",
                 "顶格申购需配市值",
@@ -347,7 +388,9 @@ def stock_xgsglb_em(symbol: str = "全部股票") -> pd.DataFrame:
         big_df["中签缴款日期"] = pd.to_datetime(big_df["中签缴款日期"]).dt.date
         big_df["发行总数"] = pd.to_numeric(big_df["发行总数"], errors="coerce")
         big_df["网上发行"] = pd.to_numeric(big_df["网上发行"], errors="coerce")
-        big_df["顶格申购需配市值"] = pd.to_numeric(big_df["顶格申购需配市值"], errors="coerce")
+        big_df["顶格申购需配市值"] = pd.to_numeric(
+            big_df["顶格申购需配市值"], errors="coerce"
+        )
         big_df["申购上限"] = pd.to_numeric(big_df["申购上限"], errors="coerce")
         big_df["发行价格"] = pd.to_numeric(big_df["发行价格"], errors="coerce")
         big_df["最新价"] = pd.to_numeric(big_df["最新价"], errors="coerce")
@@ -355,8 +398,12 @@ def stock_xgsglb_em(symbol: str = "全部股票") -> pd.DataFrame:
         big_df["发行市盈率"] = pd.to_numeric(big_df["发行市盈率"], errors="coerce")
         big_df["行业市盈率"] = pd.to_numeric(big_df["行业市盈率"], errors="coerce")
         big_df["中签率"] = pd.to_numeric(big_df["中签率"], errors="coerce")
-        big_df["询价累计报价倍数"] = pd.to_numeric(big_df["询价累计报价倍数"], errors="coerce")
-        big_df["配售对象报价家数"] = pd.to_numeric(big_df["配售对象报价家数"], errors="coerce")
+        big_df["询价累计报价倍数"] = pd.to_numeric(
+            big_df["询价累计报价倍数"], errors="coerce"
+        )
+        big_df["配售对象报价家数"] = pd.to_numeric(
+            big_df["配售对象报价家数"], errors="coerce"
+        )
         big_df["涨幅"] = pd.to_numeric(big_df["涨幅"], errors="coerce")
         big_df["每中一签获利"] = pd.to_numeric(big_df["每中一签获利"], errors="coerce")
     return big_df

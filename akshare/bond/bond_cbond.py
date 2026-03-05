@@ -4,6 +4,7 @@
 Date: 2022/9/20 17:46
 Desc: 中国债券信息网-中债指数-中债指数族系-总指数-综合类指数
 """
+
 import pandas as pd
 import requests
 
@@ -58,17 +59,17 @@ def bond_new_composite_index_cbond(
     url = "https://yield.chinabond.com.cn/cbweb-mn/indices/singleIndexQuery"
     params = {
         "indexid": "8a8b2ca0332abed20134ea76d8885831",
-        "": "",
+        "": "",  # noqa: F601
         "qxlxt": period_map[period],
-        "": "",
+        "": "",  # noqa: F601
         "ltcslx": "",
-        "": "",
-        "zslxt": indicator_map[indicator],
-        "": "",
-        "zslxt": indicator_map[indicator],
-        "": "",
+        "": "",  # noqa: F601
+        "zslxt": indicator_map[indicator],  # noqa: F601
+        "": "",  # noqa: F601
+        "zslxt": indicator_map[indicator],  # noqa: F601
+        "": "",  # noqa: F601
         "lx": "1",
-        "": "",
+        "": "",  # noqa: F601
         "locale": "",
     }
     r = requests.post(url, params=params)
@@ -79,6 +80,12 @@ def bond_new_composite_index_cbond(
     )
     temp_df.reset_index(inplace=True)
     temp_df.columns = ["date", "value"]
+    temp_df["date"] = temp_df["date"].astype(float)
+    temp_df["date"] = (
+        pd.to_datetime(temp_df["date"], unit="ms", errors="coerce", utc=True)
+        .dt.tz_convert("Asia/Shanghai")
+        .dt.date
+    )
     temp_df['date'] = temp_df['date'].astype(float)
     temp_df["date"] = pd.to_datetime(temp_df["date"], unit="ms", errors="coerce", utc=True).dt.tz_convert("Asia/Shanghai").dt.date
     temp_df["value"] = pd.to_numeric(temp_df["value"], errors="coerce")
@@ -135,13 +142,13 @@ def bond_composite_index_cbond(
     url = "https://yield.chinabond.com.cn/cbweb-mn/indices/singleIndexQuery"
     params = {
         "indexid": "2c90818811afed8d0111c0c672b31578",
-        "": "",
+        "": "",  # noqa: F601
         "qxlxt": period_map[period],
-        "": "",
+        "": "",  # noqa: F601
         "zslxt": indicator_map[indicator],
-        "": "",
+        "": "",  # noqa: F601
         "lx": "1",
-        "": "",
+        "": "",  # noqa: F601
         "locale": "",
     }
     r = requests.post(url, params=params)

@@ -5,6 +5,7 @@ Date: 2022/8/29 14:20
 Desc: 东方财富网-数据中心-股票回购-股票回购数据
 https://data.eastmoney.com/gphg/hglist.html
 """
+
 import pandas as pd
 import requests
 from tqdm import tqdm
@@ -105,8 +106,12 @@ def stock_repurchase_em() -> pd.DataFrame:
     big_df["计划回购价格区间"] = pd.to_numeric(big_df["计划回购价格区间"])
     big_df["计划回购数量区间-下限"] = pd.to_numeric(big_df["计划回购数量区间-下限"])
     big_df["计划回购数量区间-上限"] = pd.to_numeric(big_df["计划回购数量区间-上限"])
-    big_df["占公告前一日总股本比例-上限"] = pd.to_numeric(big_df["占公告前一日总股本比例-上限"])
-    big_df["占公告前一日总股本比例-下限"] = pd.to_numeric(big_df["占公告前一日总股本比例-下限"])
+    big_df["占公告前一日总股本比例-上限"] = pd.to_numeric(
+        big_df["占公告前一日总股本比例-上限"]
+    )
+    big_df["占公告前一日总股本比例-下限"] = pd.to_numeric(
+        big_df["占公告前一日总股本比例-下限"]
+    )
     big_df["计划回购金额区间-上限"] = pd.to_numeric(big_df["计划回购金额区间-上限"])
     big_df["计划回购金额区间-下限"] = pd.to_numeric(big_df["计划回购金额区间-下限"])
     big_df["已回购股份价格区间-下限"] = pd.to_numeric(big_df["已回购股份价格区间-下限"])

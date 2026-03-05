@@ -5,6 +5,7 @@ Date: 2023/4/7 15:05
 Desc: 乐咕乐股-大盘拥挤度
 https://legulegu.com/stockdata/ashares-congestion
 """
+
 import pandas as pd
 import requests
 
@@ -24,7 +25,7 @@ def stock_a_congestion_lg() -> pd.DataFrame:
     r = requests.get(
         url,
         params=params,
-        **get_cookie_csrf(url="https://legulegu.com/stockdata/ashares-congestion")
+        **get_cookie_csrf(url="https://legulegu.com/stockdata/ashares-congestion"),
     )
     data_json = r.json()
     temp_df = pd.DataFrame(data_json["items"])

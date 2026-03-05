@@ -5,6 +5,7 @@ Date: 2022/1/26 15:10
 Desc: 福布斯中国-榜单
 https://www.forbeschina.com/lists
 """
+
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -24,8 +25,7 @@ def forbes_rank(symbol: str = "2021福布斯中国创投人100") -> pd.DataFrame
     r = requests.get(url, verify=False)
     soup = BeautifulSoup(r.text, "lxml")
     need_list = [
-        item.find_all("a")
-        for item in soup.find_all("div", attrs={"class": "col-sm-4"})
+        item.find_all("a") for item in soup.find_all("div", attrs={"class": "col-sm-4"})
     ]
     all_list = []
     for item in need_list:
@@ -33,10 +33,7 @@ def forbes_rank(symbol: str = "2021福布斯中国创投人100") -> pd.DataFrame
     name_url_dict = dict(
         zip(
             [item.text.strip() for item in all_list],
-            [
-                "https://www.forbeschina.com" + item["href"]
-                for item in all_list
-            ],
+            ["https://www.forbeschina.com" + item["href"] for item in all_list],
         )
     )
     r = requests.get(name_url_dict[symbol], verify=False)

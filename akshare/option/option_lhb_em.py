@@ -31,14 +31,14 @@ def option_lhb_em(
     params = {
         "type": "RPT_IF_BILLBOARD_TD",
         "sty": "ALL",
-        "filter": f"""(SECURITY_CODE="{symbol}")(TRADE_DATE='{'-'.join([trade_date[:4],
-                                                                        trade_date[4:6], trade_date[6:]])}')""",
+        "filter": f"""(SECURITY_CODE="{symbol}")(TRADE_DATE='{
+            "-".join([trade_date[:4], trade_date[4:6], trade_date[6:]])
+        }')""",
         "p": "1",
         "pss": "200",
         "source": "IFBILLBOARD",
         "client": "WEB",
         "ut": "b2884a393a59ad64002292a3e90d46a5",
-        "_": "1642904215146",
     }
     r = requests.get(url, params=params)
     data_json = r.json()

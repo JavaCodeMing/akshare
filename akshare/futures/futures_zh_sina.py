@@ -88,7 +88,7 @@ def futures_symbol_mark() -> pd.DataFrame:
     return temp_df
 
 
-def futures_zh_realtime(symbol: str = "白糖") -> pd.DataFrame:
+def futures_zh_realtime(symbol: str = "PTA") -> pd.DataFrame:
     """
     期货品种当前时刻所有可交易的合约实时数据
     https://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html#titlePos_1
@@ -369,7 +369,7 @@ def futures_zh_spot(
                 "_",
                 "_",
                 "_",
-                "_" "_",
+                "__",
                 "time",
                 "_",
                 "_",
@@ -571,7 +571,7 @@ def futures_zh_spot(
                 "_",
                 "_",
                 "_",
-                "_" "_",
+                "__",
                 "time",
                 "_",
                 "_",

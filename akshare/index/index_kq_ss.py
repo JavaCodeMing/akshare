@@ -5,6 +5,7 @@ Date: 2023/6/13 22:05
 Desc: 柯桥时尚指数
 http://ss.kqindex.cn:9559/rinder_web_kqsszs/index/index_page.do
 """
+
 import pandas as pd
 import requests
 

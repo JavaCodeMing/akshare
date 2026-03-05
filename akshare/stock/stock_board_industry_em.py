@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 """
-Date: 2025/2/28 16:30
+Date: 2025/3/10 19:30
 Desc: 东方财富-沪深板块-行业板块
 https://quote.eastmoney.com/center/boardlist.html#industry_board
 """
@@ -11,6 +11,8 @@ from functools import lru_cache
 
 import pandas as pd
 import requests
+
+from akshare.utils.func import fetch_paginated_data
 
 
 @lru_cache()
@@ -24,9 +26,9 @@ def __stock_board_industry_name_em() -> pd.DataFrame:
     url = "https://17.push2.eastmoney.com/api/qt/clist/get"
     params = {
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
@@ -35,13 +37,8 @@ def __stock_board_industry_name_em() -> pd.DataFrame:
         "fields": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,"
         "f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,"
         "f140,f141,f207,f208,f209,f222",
-        "_": "1626075887768",
     }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
-    temp_df.reset_index(inplace=True)
-    temp_df["index"] = temp_df.index + 1
+    temp_df = fetch_paginated_data(url, params)
     temp_df.columns = [
         "排名",
         "-",
@@ -125,9 +122,9 @@ def stock_board_industry_name_em() -> pd.DataFrame:
     url = "https://17.push2.eastmoney.com/api/qt/clist/get"
     params = {
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
@@ -136,13 +133,8 @@ def stock_board_industry_name_em() -> pd.DataFrame:
         "fields": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,"
         "f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,"
         "f140,f141,f207,f208,f209,f222",
-        "_": "1626075887768",
     }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
-    temp_df.reset_index(inplace=True)
-    temp_df["index"] = temp_df.index + 1
+    temp_df = fetch_paginated_data(url, params)
     temp_df.columns = [
         "排名",
         "-",
@@ -250,7 +242,6 @@ def stock_board_industry_spot_em(symbol: str = "小金属") -> pd.DataFrame:
         invt="2",
         fltt="1",
         secid=f"90.{em_code}",
-        ut="fa5fd1943c7b386f172d6893dbfba10b",
     )
     r = requests.get(url, params=params)
     data_dict = r.json()
@@ -290,20 +281,20 @@ def stock_board_industry_hist_em(
     :return: 历史行情
     :rtype: pandas.DataFrame
     """
+    if re.match(pattern=r"^BK\d+", string=symbol):
+        em_code = symbol
+    else:
+        industry_listing = __stock_board_industry_name_em()
+        em_code = industry_listing.query("板块名称 == @symbol")["板块代码"].values[0]
     period_map = {
         "日k": "101",
         "周k": "102",
         "月k": "103",
     }
-    stock_board_concept_em_map = __stock_board_industry_name_em()
-    stock_board_code = stock_board_concept_em_map[
-        stock_board_concept_em_map["板块名称"] == symbol
-    ]["板块代码"].values[0]
     adjust_map = {"": "0", "qfq": "1", "hfq": "2"}
     url = "http://7.push2his.eastmoney.com/api/qt/stock/kline/get"
     params = {
-        "secid": f"90.{stock_board_code}",
-        "ut": "fa5fd1943c7b386f172d6893dbfba10b",
+        "secid": f"90.{em_code}",
         "fields1": "f1,f2,f3,f4,f5,f6",
         "fields2": "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
         "klt": period_map[period],
@@ -312,7 +303,6 @@ def stock_board_industry_hist_em(
         "end": end_date,
         "smplmt": "10000",
         "lmt": "1000000",
-        "_": "1626079488673",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -371,20 +361,19 @@ def stock_board_industry_hist_min_em(
     :return: 分时历史行情
     :rtype: pandas.DataFrame
     """
-    stock_board_concept_em_map = __stock_board_industry_name_em()
-    stock_board_code = stock_board_concept_em_map[
-        stock_board_concept_em_map["板块名称"] == symbol
-    ]["板块代码"].values[0]
+    if re.match(pattern=r"^BK\d+", string=symbol):
+        em_code = symbol
+    else:
+        industry_listing = __stock_board_industry_name_em()
+        em_code = industry_listing.query("板块名称 == @symbol")["板块代码"].values[0]
     if period == "1":
         url = "https://push2his.eastmoney.com/api/qt/stock/trends2/get"
         params = {
             "fields1": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13",
             "fields2": "f51,f52,f53,f54,f55,f56,f57,f58",
-            "ut": "fa5fd1943c7b386f172d6893dbfba10b",
             "iscr": "0",
             "ndays": "1",
-            "secid": f"90.{stock_board_code}",
-            "_": "1687852931312",
+            "secid": f"90.{em_code}",
         }
         r = requests.get(url, params=params)
         data_json = r.json()
@@ -411,10 +400,9 @@ def stock_board_industry_hist_min_em(
         temp_df["最新价"] = pd.to_numeric(temp_df["最新价"], errors="coerce")
         return temp_df
     else:
-        url = "http://7.push2his.eastmoney.com/api/qt/stock/kline/get"
+        url = "https://7.push2his.eastmoney.com/api/qt/stock/kline/get"
         params = {
-            "secid": f"90.{stock_board_code}",
-            "ut": "fa5fd1943c7b386f172d6893dbfba10b",
+            "secid": f"90.{em_code}",
             "fields1": "f1,f2,f3,f4,f5,f6",
             "fields2": "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
             "klt": period,
@@ -423,7 +411,6 @@ def stock_board_industry_hist_min_em(
             "end": "20500101",
             "smplmt": "10000",
             "lmt": "1000000",
-            "_": "1626079488673",
         }
         r = requests.get(url, params=params)
         data_json = r.json()
@@ -490,9 +477,9 @@ def stock_board_industry_cons_em(symbol: str = "小金属") -> pd.DataFrame:
     url = "https://29.push2.eastmoney.com/api/qt/clist/get"
     params = {
         "pn": "1",
-        "pz": "50000",
+        "pz": "100",
         "po": "1",
-        "np": "2",
+        "np": "1",
         "ut": "bd1d9ddb04089700cf9c27f6f7426281",
         "fltt": "2",
         "invt": "2",
@@ -500,13 +487,8 @@ def stock_board_industry_cons_em(symbol: str = "小金属") -> pd.DataFrame:
         "fs": f"b:{stock_board_code} f:!50",
         "fields": "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,"
         "f23,f24,f25,f22,f11,f62,f128,f136,f115,f152,f45",
-        "_": "1626081702127",
     }
-    r = requests.get(url, params=params)
-    data_json = r.json()
-    temp_df = pd.DataFrame(data_json["data"]["diff"]).T
-    temp_df.reset_index(inplace=True)
-    temp_df["index"] = range(1, len(temp_df) + 1)
+    temp_df = fetch_paginated_data(url, params)
     temp_df.columns = [
         "序号",
         "_",
@@ -599,5 +581,5 @@ if __name__ == "__main__":
     )
     print(stock_board_industry_hist_min_em_df)
 
-    stock_board_industry_cons_em_df = stock_board_industry_cons_em(symbol="小金属")
+    stock_board_industry_cons_em_df = stock_board_industry_cons_em(symbol="互联网服务")
     print(stock_board_industry_cons_em_df)

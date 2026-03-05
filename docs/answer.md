@@ -27,7 +27,7 @@
     1. 由于目标网页的大部分的接口一次性返回所有数据，所以在 AKShare 的部分接口函数中没有设置类似 `start_date` 和 `end_date` 的参数
     2. 如果要获取指定日期间的数据，请在调用接口后自行处理
 
-4. 接口报错出现类似错误提示： `ReadTimeout: HTTPConnectionPool(host="www.xxx.com")` 
+4. 接口报错出现类似错误提示： `ReadTimeout: HTTPConnectionPool(host="www.xxx.com")`
 
     1. 重新运行接口函数
     2. 更换 IP 地址，可以使用代理访问
@@ -45,16 +45,16 @@
     3. 可以在 [GitHub Issues](https://github.com/akfamily/akshare/issues) 中反馈
 
 7. 全球疫情历史数据接口获取不到数据
-    
+
     1. 由于 GitHub 服务器在国外，访问此数据接口最好使用代理访问
     2. 如没有代理的情况下，多重复请求几次
-   
+
 8. 返回值字段错位
-    
+
     1. 升级 pandas 到最新版本
 
 9. Linux 系统显示 `execjs._exceptions.RuntimeUnavailableError: Could not find an available JavaScript runtime.`
-    
+
     1. 需要安装 `nodejs`
     2. 参考[文章](https://blog.csdn.net/qq_36853469/article/details/106401389)
 
@@ -77,7 +77,7 @@ print(stock_zh_index_daily_df)
 ```
 
 11. 出现 `AttributeError: 'MiniRacer' object has no attribute 'ext'` 报错
-    
+
     1. 安装 64 位版本的 Python
 
 12. 无法下载疫情的海外数据

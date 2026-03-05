@@ -5,6 +5,7 @@ Date: 2023/4/11 20:40
 Desc: 全部A股-等权重市净率、中位数市净率
 https://www.legulegu.com/stockdata/all-pb
 """
+
 import pandas as pd
 import requests
 
@@ -26,7 +27,7 @@ def stock_a_all_pb() -> pd.DataFrame:
     r = requests.get(
         url,
         params=params,
-        **get_cookie_csrf(url="https://legulegu.com/stockdata/all-pb")
+        **get_cookie_csrf(url="https://legulegu.com/stockdata/all-pb"),
     )
     data_json = r.json()
     temp_df = pd.DataFrame(data_json["data"])

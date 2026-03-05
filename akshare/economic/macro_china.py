@@ -1,23 +1,44 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 """
-Date: 2024/12/2 15:20
+Date: 2025/11/12 15:20
 Desc: 宏观数据-中国
 """
 
 import datetime
 import json
 import math
+import ssl
 import time
 
 import pandas as pd
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.poolmanager import PoolManager
 
 from akshare.economic.cons import (
     JS_CHINA_ENERGY_DAILY_URL,
 )
 from akshare.utils import demjson
 from akshare.utils.tqdm import get_tqdm
+
+
+class TLSAdapter(HTTPAdapter):
+    def init_poolmanager(self, connections, maxsize, block=False):
+        ctx = ssl.create_default_context()
+        # 降低安全级别以兼容旧服务器
+        ctx.set_ciphers("DEFAULT@SECLEVEL=1")
+        # 禁用不安全的协议
+        ctx.options |= ssl.OP_NO_SSLv2
+        ctx.options |= ssl.OP_NO_SSLv3
+        # 指定使用 TLSv1.2
+        self.poolmanager = PoolManager(
+            num_pools=connections,
+            maxsize=maxsize,
+            block=block,
+            ssl_version=ssl.PROTOCOL_TLSv1_2,
+            ssl_context=ctx,
+        )
 
 
 def __macro_china_base_func(symbol: str, params: dict) -> pd.DataFrame:
@@ -105,7 +126,6 @@ def macro_china_qyspjg() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -200,7 +220,6 @@ def macro_china_fdi() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -242,8 +261,10 @@ def macro_china_shrzgm() -> pd.DataFrame:
     :return: 社会融资规模增量统计
     :rtype: pandas.DataFrame
     """
-    url = "http://data.mofcom.gov.cn/datamofcom/front/gnmy/shrzgmQuery"
-    r = requests.post(url)
+    session = requests.Session()
+    session.mount(prefix="https://", adapter=TLSAdapter())
+    url = "https://data.mofcom.gov.cn/datamofcom/front/gnmy/shrzgmQuery"
+    r = session.post(url)
     data_json = r.json()
     temp_df = pd.DataFrame(data_json)
     temp_df.columns = [
@@ -984,7 +1005,6 @@ def macro_china_lpr() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1689835278471",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -1037,7 +1057,6 @@ def macro_china_new_house_price(
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669352163467",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -1110,7 +1129,6 @@ def macro_china_enterprise_boom_index() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669352163467",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -1178,7 +1196,6 @@ def macro_china_national_tax_receipts() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669352163467",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -2116,7 +2133,6 @@ def macro_china_new_financial_credit() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -2169,7 +2185,6 @@ def macro_china_fx_gold() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1660718498421",
     }
     r = requests.get(url, params=params, headers=headers)
     data_json = r.json()
@@ -2233,7 +2248,6 @@ def macro_china_stock_market_cap() -> pd.DataFrame:
         "pageSize": "1000",
         "source": "WEB",
         "client": "WEB",
-        "_": "1660718498421",
     }
     r = requests.get(url, params=params, headers=headers)
     data_json = r.json()
@@ -2319,7 +2333,6 @@ def macro_china_money_supply() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -2404,7 +2417,6 @@ def macro_china_cpi() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -2479,7 +2491,6 @@ def macro_china_gdp() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -2556,7 +2567,6 @@ def macro_china_ppi() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -2602,7 +2612,6 @@ def macro_china_pmi() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -2655,7 +2664,6 @@ def macro_china_gdzctz() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -2707,7 +2715,6 @@ def macro_china_hgjck() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -2797,7 +2804,6 @@ def macro_china_czsr() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -2827,7 +2833,7 @@ def macro_china_czsr() -> pd.DataFrame:
     temp_df["当月-环比增长"] = pd.to_numeric(temp_df["当月-环比增长"], errors="coerce")
     temp_df["累计"] = pd.to_numeric(temp_df["累计"], errors="coerce")
     temp_df["累计-同比增长"] = pd.to_numeric(temp_df["累计-同比增长"], errors="coerce")
-
+    temp_df.sort_values(by=["月份"], ignore_index=True, inplace=True)
     return temp_df
 
 
@@ -2851,7 +2857,6 @@ def macro_china_whxd() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -2878,6 +2883,7 @@ def macro_china_whxd() -> pd.DataFrame:
     temp_df["同比增长"] = pd.to_numeric(temp_df["同比增长"], errors="coerce")
     temp_df["环比增长"] = pd.to_numeric(temp_df["环比增长"], errors="coerce")
     temp_df["累计"] = pd.to_numeric(temp_df["累计"], errors="coerce")
+    temp_df.sort_values(by=["月份"], ignore_index=True, inplace=True)
     return temp_df
 
 
@@ -2901,7 +2907,6 @@ def macro_china_wbck() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -2928,7 +2933,6 @@ def macro_china_wbck() -> pd.DataFrame:
     temp_df["同比增长"] = pd.to_numeric(temp_df["同比增长"], errors="coerce")
     temp_df["环比增长"] = pd.to_numeric(temp_df["环比增长"], errors="coerce")
     temp_df["累计"] = pd.to_numeric(temp_df["累计"], errors="coerce")
-
     return temp_df
 
 
@@ -2954,7 +2958,6 @@ def macro_china_xfzxx() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -3038,7 +3041,6 @@ def macro_china_gyzjz() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1691676211803",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -3085,7 +3087,6 @@ def macro_china_reserve_requirement_ratio() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1669047266881",
     }
     r = requests.get(url, params=params)
     data_json = r.json()
@@ -3174,7 +3175,6 @@ def macro_china_consumer_goods_retail() -> pd.DataFrame:
         "p": "1",
         "pageNo": "1",
         "pageNum": "1",
-        "_": "1660718498421",
     }
     r = requests.get(url, params=params, headers=headers)
     data_json = r.json()
@@ -3220,7 +3220,6 @@ def macro_china_society_electricity() -> pd.DataFrame:
         "from": "0",
         "num": "31",
         "condition": "",
-        "_": "1601557771972",
     }
     r = requests.get(url, params=params)
     data_text = r.text
@@ -3274,7 +3273,6 @@ def macro_china_society_traffic_volume() -> pd.DataFrame:
         "from": "0",
         "num": "31",
         "condition": "",
-        "_": "1601557771972",
     }
     r = requests.get(url, params=params)
     data_text = r.text
@@ -3333,7 +3331,6 @@ def macro_china_postal_telecommunicational() -> pd.DataFrame:
         "from": "0",
         "num": "31",
         "condition": "",
-        "_": "1601624495046",
     }
     r = requests.get(url, params=params)
     data_text = r.text
@@ -3368,7 +3365,6 @@ def macro_china_international_tourism_fx() -> pd.DataFrame:
         "from": "0",
         "num": "31",
         "condition": "",
-        "_": "1601624495046",
     }
     r = requests.get(url, params=params)
     data_text = r.text
@@ -3403,7 +3399,6 @@ def macro_china_passenger_load_factor() -> pd.DataFrame:
         "from": "0",
         "num": "31",
         "condition": "",
-        "_": "1601624495046",
     }
     r = requests.get(url, params=params)
     data_text = r.text
@@ -3438,7 +3433,6 @@ def _macro_china_freight_index() -> pd.DataFrame:
         "from": "0",
         "num": "31",
         "condition": "",
-        "_": "1601624495046",
     }
     r = requests.get(url, params=params)
     data_text = r.text
@@ -3516,7 +3510,6 @@ def macro_china_central_bank_balance() -> pd.DataFrame:
         "from": "0",
         "num": "31",
         "condition": "",
-        "_": "1601624495046",
     }
     r = requests.get(url, params=params)
     data_text = r.text
@@ -3551,7 +3544,6 @@ def macro_china_insurance() -> pd.DataFrame:
         "from": "0",
         "num": "31",
         "condition": "",
-        "_": "1601624495046",
     }
     r = requests.get(url, params=params)
     data_text = r.text
@@ -3586,7 +3578,6 @@ def macro_china_supply_of_money() -> pd.DataFrame:
         "from": "0",
         "num": "31",
         "condition": "",
-        "_": "1601624495046",
     }
     r = requests.get(url, params=params)
     data_text = r.text
@@ -3621,7 +3612,6 @@ def macro_china_foreign_exchange_gold() -> pd.DataFrame:
         "from": "0",
         "num": "31",
         "condition": "",
-        "_": "1601624495046",
     }
     r = requests.get(url, params=params)
     data_text = r.text
@@ -3657,7 +3647,6 @@ def macro_china_retail_price_index() -> pd.DataFrame:
         "from": "0",
         "num": "31",
         "condition": "",
-        "_": "1601624495046",
     }
     r = requests.get(url, params=params)
     data_text = r.text
